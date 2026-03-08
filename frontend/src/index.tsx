@@ -1,16 +1,28 @@
 /* @refresh reload */
-import './index.css';
-import { render } from 'solid-js/web';
-import 'solid-devtools';
+import "./index.css";
+import { render } from "solid-js/web";
+import "solid-devtools";
+import { Route, Router } from "@solidjs/router";
+import { Login } from "./pages/LoginPage";
+import { QueryClient, QueryClientProvider } from "@tanstack/solid-query";
 
-import App from './App';
-
-const root = document.getElementById('root');
+const root = document.getElementById("root");
+const client = new QueryClient();
 
 if (import.meta.env.DEV && !(root instanceof HTMLElement)) {
   throw new Error(
-    'Root element not found. Did you forget to add it to your index.html? Or maybe the id attribute got misspelled?',
+    "Root element not found. Did you forget to add it to your index.html? Or maybe the id attribute got misspelled?",
   );
 }
 
-render(() => <App />, root!);
+render(
+  () => (
+    <QueryClientProvider client={client}>
+      <Router>
+        <Route path="/login" component={Login}></Route>
+      
+      </Router>
+    </QueryClientProvider>
+  ),
+  root!,
+);

@@ -7,7 +7,7 @@ const [email, setEmail] = createSignal("");
 const [password, setPassword] = createSignal("");
 const [message, setMessage] = createSignal("");
 
-export default function Login() {
+export function Login() {
   // Check if user is already logged in ...
   const sessionQuery = useQuery(() => sessionQueryOptions);
   // if the user is already logged in, redirect to the /secure page
@@ -46,10 +46,9 @@ export default function Login() {
   };
 
   return (
-    
     <div class="flex h-[100dvh] flex-row items-center-safe justify-center">
       <form
-        class="bg-surface-color flex w-60 flex-col p-4"
+        class="bg-surface-color flex w-60 flex-col p-4 border-2 border-solid to-black"
         onSubmit={handleLogin}
       >
         <h2 class="mb-3 text-xl">Login</h2>
