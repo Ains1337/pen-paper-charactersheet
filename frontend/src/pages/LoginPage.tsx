@@ -46,7 +46,7 @@ export default function Login() {
   };
 
   return (
-    // center-safe benutzen
+    
     <div class="flex h-[100dvh] flex-row items-center-safe justify-center">
       <form
         class="bg-surface-color flex w-60 flex-col p-4"
