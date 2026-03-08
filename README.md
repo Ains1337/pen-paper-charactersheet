@@ -11,7 +11,7 @@ Frontend: Bun, Solidjs mit Vite to create a lightweight GUI with input fields an
 
 Backend: GOLANG, API
 
-DB: PostgreSQL
+DB: SQLite
 
 Availability: Cross-Plattform
 
