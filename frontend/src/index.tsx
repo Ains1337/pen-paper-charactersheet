@@ -2,7 +2,7 @@
 import "./index.css";
 import { render } from "solid-js/web";
 import "solid-devtools";
-import { Route, Router } from "@solidjs/router";
+import { Navigate, Route, Router } from "@solidjs/router";
 import { Login } from "./pages/LoginPage";
 import { QueryClient, QueryClientProvider } from "@tanstack/solid-query";
 
@@ -20,7 +20,7 @@ render(
     <QueryClientProvider client={client}>
       <Router>
         <Route path="/login" component={Login}></Route>
-      
+        <Route path="/" component={() => <Navigate href="/login" />}></Route>
       </Router>
     </QueryClientProvider>
   ),
