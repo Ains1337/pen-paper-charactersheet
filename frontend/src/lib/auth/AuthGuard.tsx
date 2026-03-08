@@ -33,12 +33,4 @@ export default function AuthGuard({
   );
 }
 
-// TODO Plan für MVP:
-// TODO AuthGuard Frontend
 
-// TODO DB Transactions, Test, Input von Frontend zu Backend und DB Eintrag
-// TODO POSTGRES DB Server anlgen im Docker Container, Img erforderlich
-// TODO TESTING: vite eingebauter Test, Use-Case spezifische Test, Testkonzept erstellen
-// TODO Framework für PEN TABLET einfügen
-// TODO DOCKER Container Frontend, Backend, DB
-// TODO Wie funktioniert das Deployment mit Docker? Docker auf Server installieren?

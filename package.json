@@ -11,5 +11,8 @@
   },
   "dependencies": {
     "solid-js": "^1.9.11"
-  }
+  },
+  "workspaces":[
+    "testing", "frontend"
+  ]
 }
