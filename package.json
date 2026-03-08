@@ -1,0 +1,15 @@
+{
+  "name": "pen-paper-charactersheet",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "solid-js": "^1.9.11"
+  }
+}
