@@ -1,6 +1,6 @@
 import { A, useNavigate } from "@solidjs/router";
 import { JSX } from "solid-js";
-import AuthGuard from "../lib/auth/AuthGuard";
+import {AuthGuard} from "../lib/auth/AuthGuard";
 // import character image from database?
 // children? = optional, no strict type binding
 // Navigation with links in a horizontal layout

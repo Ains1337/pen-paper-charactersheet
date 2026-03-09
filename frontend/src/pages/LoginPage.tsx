@@ -15,7 +15,7 @@ export function Login() {
 
   createEffect(() => {
     if (sessionQuery.isFetched && sessionQuery.isSuccess) {
-      navigate("/secure/player-or-game-master");
+      navigate("/secure");
     }
   });
 
@@ -27,22 +27,23 @@ export function Login() {
     setPassword("");
     setMessage("");
   });
-
+  // login mock
   const handleLogin = async (e: SubmitEvent) => {
     e.preventDefault();
-    const res = await fetch("/api/auth/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ E_Mail: email(), Password: password() }),
-    });
-    const data = await res.json();
-    if (res.ok) {
-      setMessage("User logged in successfully!");
-      navigate("/secure/player-or-game-master");
-    } else {
-      setMessage(data.message);
-      alert("Login failed!");
-    }
+
+    // const res = await fetch("/api/auth/login", {
+    //   method: "POST",
+    //   headers: { "Content-Type": "application/json" },
+    //   body: JSON.stringify({ E_Mail: email(), Password: password() }),
+    // });
+    // const data = await res.json();
+    // if (res.ok) {
+    setMessage("User logged in successfully!");
+    navigate("/secure");
+    // } else {
+    //   setMessage(data.message);
+    //   alert("Login failed!");
+    // }
   };
 
   return (

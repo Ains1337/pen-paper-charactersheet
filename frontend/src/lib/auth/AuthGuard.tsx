@@ -5,15 +5,20 @@
 
 import { Navigate } from "@solidjs/router";
 import { useQuery } from "@tanstack/solid-query";
-import { JSX, Show } from "solid-js";
+import { ParentProps, Show } from "solid-js";
 import { sessionQueryOptions } from "./sessionQueryOptions";
 
-export default function AuthGuard({
-  children,
-}: {
-  children: JSX.Element | JSX.Element[] | string;
-}) {
-  const session = useQuery(() => sessionQueryOptions);
+export function AuthGuard(props: ParentProps) {
+  // const session = useQuery(() => sessionQueryOptions);
+  // Mock login success
+  const session = useQuery(() => ({
+    queryKey: ["session"],
+    queryFn: async () => {
+      return true;
+    },
+    retry: false,
+    refetchOnWindowFocus: true,
+  }));
 
   return (
     <>
@@ -23,7 +28,8 @@ export default function AuthGuard({
       </Show>
       <Show when={session.isSuccess}>
         {/* show children when session query is successful */}
-        {children}
+        <h1>AuthGuard</h1>
+        {props.children}
       </Show>
       <Show when={session.isError}>
         {/* navigate to login when session query fails */}
@@ -32,5 +38,3 @@ export default function AuthGuard({
     </>
   );
 }
-
-
