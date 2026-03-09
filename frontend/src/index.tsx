@@ -8,6 +8,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/solid-query";
 import { PlayerOrGameMaster } from "./pages/player-or-game-master";
 import { AuthGuard } from "./lib/auth/AuthGuard";
 import { OverviewCharacters } from "./pages/player/overview-characters";
+import { RouteDebugger } from "./components/RouteDebugger";
 
 const root = document.getElementById("root");
 const client = new QueryClient();
@@ -39,7 +40,9 @@ render(
           <Route path="/player">
             <Route
               path="/"
-              component={() => <Navigate href="/secure/player/overview-characters" />}
+              component={() => (
+                <Navigate href="/secure/player/overview-characters" />
+              )}
             ></Route>
             <Route
               path="/overview-characters"
