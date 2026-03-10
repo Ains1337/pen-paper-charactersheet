@@ -8,6 +8,7 @@
 @layer base {
   body {
     @apply min-w-[810px] bg-slate-400 dark:bg-slate-600;
+    @apply text-white;
   }
 
   h2 {
