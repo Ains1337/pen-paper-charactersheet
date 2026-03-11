@@ -5,11 +5,11 @@ import "solid-devtools";
 import { Navigate, Route, Router } from "@solidjs/router";
 import { Login } from "./pages/Login";
 import { QueryClient, QueryClientProvider } from "@tanstack/solid-query";
-import { PlayerOrDungeonMaster } from "./pages/player-or-dungeon-master";
+import { PlayerOrGameMaster } from "./pages/player-or-game-master";
 import { AuthGuard } from "./lib/auth/AuthGuard";
 import { OverviewCharacters } from "./pages/player/overview-characters";
 import { RouteDebugger } from "./components/RouteDebugger";
-import { OverviewGroups } from "./pages/dungeon-master/overview-groups";
+import { OverviewGroups } from "./pages/game-master/overview-groups";
 
 const root = document.getElementById("root");
 const client = new QueryClient();
@@ -31,14 +31,12 @@ render(
         <Route path="/secure" component={AuthGuard}>
           <Route
             path="/"
-            component={() => (
-              <Navigate href="/secure/player-or-dungeon-master" />
-            )}
+            component={() => <Navigate href="/secure/player-or-game-master" />}
           ></Route>
 
           <Route
-            path="/player-or-dungeon-master"
-            component={PlayerOrDungeonMaster}
+            path="/player-or-game-master"
+            component={PlayerOrGameMaster}
           ></Route>
           {/* access to all pages in folder player */}
           <Route path="/player">
@@ -55,16 +53,16 @@ render(
             {/* placeholder for next player page */}
             <></>
           </Route>
-          {/*  access to all pages in folder dungeon-master*/}
-          <Route path="/dungeon-master">
+          {/*  access to all pages in folder game-master*/}
+          <Route path="/game-master">
             <Route
               path="/"
               component={() => (
-                <Navigate href="/secure/dungeon-master/overview-groups" />
+                <Navigate href="/secure/game-master/overview-groups" />
               )}
             ></Route>
             <Route path="/overview-groups" component={OverviewGroups}></Route>
-            {/* placeholder for next dungeon-master page */}
+            {/* placeholder for next game-master page */}
             <></>
           </Route>
         </Route>
