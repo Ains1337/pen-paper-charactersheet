@@ -4,7 +4,6 @@
 
 Learn routing in a real SolidJS project and reduce repeated link strings.
 
-We use `game-master` as the final naming.
 
 ## Route Tree
 
