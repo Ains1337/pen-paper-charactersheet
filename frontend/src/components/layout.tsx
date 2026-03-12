@@ -1,6 +1,7 @@
 import { A, useNavigate } from "@solidjs/router";
 import { JSX } from "solid-js";
-import {AuthGuard} from "../lib/auth/AuthGuard";
+import { AuthGuard } from "../lib/auth/AuthGuard";
+import { ROUTES } from "../lib/auth/routes";
 // import character image from database?
 // children? = optional, no strict type binding
 // Navigation with links in a horizontal layout
@@ -20,7 +21,7 @@ export function Layout(props: {
           <img class="m-4 w-20 min-w-20" src={}></img>
         </div> */}
 
-          {/* Center column: flexbox with 2 rows: top navigation, bottom content */}
+        {/* Center column: flexbox with 2 rows: top navigation, bottom content */}
         <div class="flex min-w-0 flex-1 flex-col gap-5">
           {/* mx-auto only works with max-w and a fixed width, centers the element,
         with equal spacing on the left and right */}
@@ -29,58 +30,55 @@ export function Layout(props: {
               <A
                 class="text-black hover:underline hover:underline-offset-3 focus:outline-2 focus:outline-offset-4 focus:outline-black"
                 activeClass="outline-black outline-1 outline-offset-4"
-                href="/secure/"
+                href={ROUTES.secure.root}
                 rel="noopener noreferrer"
               >
-                 <br />
-                
+                <br />
               </A>
               <A
                 class="text-black hover:underline hover:underline-offset-3 focus:outline-2 focus:outline-offset-4 focus:outline-black"
                 activeClass="outline-black outline-1 outline-offset-4"
-                href="/secure/"
+                href={ROUTES.secure.root}
                 rel="noopener noreferrer"
               >
                 <br />
-                
               </A>
 
               <A
                 class="text-black hover:underline hover:underline-offset-3 focus:outline-2 focus:outline-offset-4 focus:outline-black"
                 activeClass="outline-black outline-1 outline-offset-4"
-                href="/secure/"
+                href={ROUTES.secure.root}
                 rel="noopener noreferrer"
               >
                 <br />
-                
               </A>
               <A
                 class="text-black hover:underline hover:underline-offset-3 focus:outline-2 focus:outline-offset-4 focus:outline-black"
                 activeClass="outline-black outline-1 outline-offset-4"
-                href="/secure/"
+                href={ROUTES.secure.root}
                 rel="noopener noreferrer"
               >
                 Overview:
-                <br /> 
+                <br />
               </A>
               <A
                 class="text-black hover:underline hover:underline-offset-3 focus:outline-2 focus:outline-offset-4 focus:outline-black"
                 activeClass="outline-black outline-1 outline-offset-4"
-                href="/secure/"
+                href={ROUTES.secure.root}
                 rel="noopener noreferrer"
               >
                 Overview:
-                <br /> 
+                <br />
               </A>
 
               <A
                 class="text-black hover:underline hover:underline-offset-3 focus:outline-2 focus:outline-offset-4 focus:outline-black"
                 activeClass="outline-black outline-1 outline-offset-4"
-                href="/secure/"
+                href={ROUTES.secure.root}
                 rel="noopener noreferrer"
               >
                 Overview:
-                <br /> 
+                <br />
               </A>
             </nav>
           </div>
@@ -100,7 +98,7 @@ export function Layout(props: {
                 method: "POST",
               })
                 .then(() => {
-                  navigate("/login");
+                  navigate(ROUTES.login);
                 })
                 .catch((error) => {
                   console.error("Logout Error", error);
