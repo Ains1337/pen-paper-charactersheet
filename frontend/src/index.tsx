@@ -10,6 +10,7 @@ import { AuthGuard } from "./lib/auth/AuthGuard";
 import { OverviewCharacters } from "./pages/player/overview-characters";
 import { RouteDebugger } from "./components/RouteDebugger";
 import { OverviewGroups } from "./pages/game-master/overview-groups";
+import { ROUTES } from "./lib/auth/routes";
 
 const root = document.getElementById("root");
 const client = new QueryClient();
@@ -26,12 +27,15 @@ render(
       <Router>
         {/* public access */}
         <Route path="/login" component={Login}></Route>
-        <Route path="/" component={() => <Navigate href="/login" />}></Route>
+        <Route
+          path="/"
+          component={() => <Navigate href={ROUTES.login} />}
+        ></Route>
         {/* private access*/}
         <Route path="/secure" component={AuthGuard}>
           <Route
             path="/"
-            component={() => <Navigate href="/secure/player-or-game-master" />}
+            component={() => <Navigate href={ROUTES.secure.rolePicker} />}
           ></Route>
 
           <Route
@@ -43,7 +47,7 @@ render(
             <Route
               path="/"
               component={() => (
-                <Navigate href="/secure/player/overview-characters" />
+                <Navigate href={ROUTES.secure.player.OverviewCharacters} />
               )}
             ></Route>
             <Route
@@ -58,7 +62,7 @@ render(
             <Route
               path="/"
               component={() => (
-                <Navigate href="/secure/game-master/overview-groups" />
+                <Navigate href={ROUTES.secure.gameMaster.overviewGroups} />
               )}
             ></Route>
             <Route path="/overview-groups" component={OverviewGroups}></Route>

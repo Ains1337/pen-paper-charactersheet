@@ -2,6 +2,7 @@ import { useNavigate } from "@solidjs/router";
 import { useQuery } from "@tanstack/solid-query";
 import { createEffect, createSignal, onMount } from "solid-js";
 import { sessionQueryOptions } from "../lib/auth/sessionQueryOptions";
+import { ROUTES } from "../lib/auth/routes";
 
 const [email, setEmail] = createSignal("");
 const [password, setPassword] = createSignal("");
@@ -15,7 +16,7 @@ export function Login() {
 
   createEffect(() => {
     if (sessionQuery.isFetched && sessionQuery.isSuccess) {
-      navigate("/secure");
+      navigate(ROUTES.secure.root);
     }
   });
 
@@ -39,7 +40,7 @@ export function Login() {
     // const data = await res.json();
     // if (res.ok) {
     setMessage("User logged in successfully!");
-    navigate("/secure");
+    navigate(ROUTES.secure.root);
     // } else {
     //   setMessage(data.message);
     //   alert("Login failed!");

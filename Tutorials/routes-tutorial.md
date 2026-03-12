@@ -40,11 +40,28 @@ navigate("/secure");
 
 Use a shared `ROUTES` object for full navigation URLs:
 
-- `<A href={...}>`
+- `<A href={...}>`  
 - `<Navigate href={...} />`
 - `navigate(...)`
 
 Keep `<Route path="...">` definitions inline for now.
+
+## Nested Route Note
+
+When a `<Route>` is nested inside another `<Route>`, its `path` must be a
+relative segment (no leading `/`). A leading `/` makes it a top-level route,
+so it will not render inside the parent.
+
+Example:
+
+```tsx
+<Route path="/secure" component={AuthGuard}>
+  <Route path="player-or-game-master" component={PlayerOrGameMaster} />
+  <Route path="player">
+    <Route path="overview-characters" component={OverviewCharacters} />
+  </Route>
+</Route>
+```
 
 ## Shared Routes File
 
@@ -109,6 +126,7 @@ export const ROUTES = {
 - [ ] Replace player default redirect with `ROUTES.secure.player.overviewCharacters`
 - [ ] Replace game-master default redirect with `ROUTES.secure.gameMaster.overviewGroups`
 - [ ] Keep `<Route path="...">` definitions inline
+- [ ] Use relative segments for nested `<Route path>` values (no leading `/`)
 
 #### `frontend/src/pages/player-or-game-master.tsx`
 

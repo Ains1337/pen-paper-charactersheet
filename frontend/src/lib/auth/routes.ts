@@ -7,7 +7,7 @@ export const ROUTES = {
     root: "/secure",
     rolePicker: "/secure/player-or-game-master",
     player: {
-      root: "secure/player",
+      root: "/secure/player",
       // fill in all player related pages from folder pages/player
       OverviewCharacters: "/secure/player/overview-characters",
       // implement route for variable new character

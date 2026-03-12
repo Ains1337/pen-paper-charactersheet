@@ -7,6 +7,7 @@ import { Navigate } from "@solidjs/router";
 import { useQuery } from "@tanstack/solid-query";
 import { ParentProps, Show } from "solid-js";
 import { sessionQueryOptions } from "./sessionQueryOptions";
+import { ROUTES } from "./routes";
 
 export function AuthGuard(props: ParentProps) {
   // const session = useQuery(() => sessionQueryOptions);
@@ -33,7 +34,7 @@ export function AuthGuard(props: ParentProps) {
       </Show>
       <Show when={session.isError}>
         {/* navigate to login when session query fails */}
-        <Navigate href="/login" />
+        <Navigate href={ROUTES.login} />
       </Show>
     </>
   );
