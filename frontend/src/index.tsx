@@ -39,11 +39,11 @@ render(
           ></Route>
 
           <Route
-            path="/player-or-game-master"
+            path="player-or-game-master"
             component={PlayerOrGameMaster}
           ></Route>
           {/* access to all pages in folder player */}
-          <Route path="/player">
+          <Route path="player">
             <Route
               path="/"
               component={() => (
@@ -51,21 +51,21 @@ render(
               )}
             ></Route>
             <Route
-              path="/overview-characters"
+              path="overview-characters"
               component={OverviewCharacters}
             ></Route>
             {/* placeholder for next player page */}
             <></>
           </Route>
           {/*  access to all pages in folder game-master*/}
-          <Route path="/game-master">
+          <Route path="game-master">
             <Route
               path="/"
               component={() => (
                 <Navigate href={ROUTES.secure.gameMaster.overviewGroups} />
               )}
             ></Route>
-            <Route path="/overview-groups" component={OverviewGroups}></Route>
+            <Route path="overview-groups" component={OverviewGroups}></Route>
             {/* placeholder for next game-master page */}
             <></>
           </Route>

@@ -2,13 +2,13 @@
 @theme {
   --text-base: 3rem;
 
-  --color-surface-color: #e6efec;
+  --color-surface-color: #f8faf7;
 }
 
 @layer base {
   body {
-    @apply min-w-[810px] bg-slate-400 dark:bg-slate-600;
-    @apply text-black;
+    @apply min-w-[810px] bg-emerald-100 text-stone-800  dark:bg-slate-900 dark:text-stone-300;
+    
   }
 
   h2 {

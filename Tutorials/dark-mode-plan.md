@@ -1,37 +1,53 @@
-# Short Beginner Tutorial: Add Dark Mode
+# Beginner Tutorial: Add a Light/Dark Theme Toggle
 
 ## Goal
 
-- **Default mode**: dark grey background + white text
-- **Dark mode**: black background + white text
+- **Default mode (eye-friendly light)**: green-tinted light background + soft dark text
+- **Dark mode**: deep slate background + muted light text
 - Save the selected mode after reload
+
+This tutorial is written for junior developers. Follow each step in order and copy/paste the code blocks exactly.
 
 ---
 
-## 1. Update global CSS
+## 1. Update global CSS (`frontend/src/index.css`)
 
-File:
-- `frontend/src/index.css`
+If your file already contains `@theme`, keep it. Add the dark variant and update the `body` classes.
 
-Use:
+Use this:
 
 ```css
 @import "tailwindcss";
 @custom-variant dark (&:where(.dark, .dark *)); /* enable class-based dark mode */
 
+@theme {
+  --text-base: 3rem;
+  --color-surface-color: #f8faf7;
+}
+
 @layer base {
   body {
-    @apply min-w-[810px] bg-slate-700 text-white dark:bg-black dark:text-white; /* default: grey, dark: black */
+    @apply min-w-[810px] bg-emerald-100 text-stone-800 dark:bg-slate-900 dark:text-stone-300; /* light: green-tinted, dark: slate */
+  }
+
+  h2 {
+    @apply col-span-2 mb-3 text-xl;
   }
 }
 ```
 
+What this does:
+
+- Light mode (default): `bg-emerald-100 text-stone-800`
+- Dark mode (when `.dark` exists on `<html>`): `bg-slate-900 text-stone-300`
+
 ---
 
-## 2. Create the toggle
+## 2. Create the toggle (`frontend/src/components/ThemeToggle.tsx`)
 
-File:
-- `frontend/src/components/ThemeToggle.tsx`
+If you already use the shared button tutorial from `Tutorials/button-style.md`, reuse those classes.
+
+Create this file and paste:
 
 ```tsx
 import { createSignal, onMount } from "solid-js";
@@ -61,27 +77,43 @@ export function ThemeToggle() {
   };
 
   return (
-    <button type="button" onClick={toggleTheme} class="rounded-md border px-3 py-2 text-white">
-      {theme() === "dark" ? "Default mode" : "Dark mode"} {/* button label */}
+    <button
+      type="button"
+      onClick={toggleTheme}
+      class="btn btn-secondary btn-icon"
+      aria-label={theme() === "dark" ? "Dark mode active" : "Light mode active"}
+      title={theme() === "dark" ? "Dark mode active" : "Light mode active"}
+    >
+      {theme() === "dark" ? "🌙" : "☀"} {/* dark = moon, light = sun */}
     </button>
   );
 }
 ```
 
+Why this works:
+
+- It toggles the `dark` class on `<html>`.
+- It stores the selected theme in `localStorage` under `theme`.
+- On reload, it reads the saved value and reapplies it.
+- `btn btn-secondary btn-icon` reuses your global button styles.
+- `🌙` and `☀` make the mode visible in the GUI.
+
+Important:
+
+- make sure `.btn`, `.btn-secondary`, and `.btn-icon` exist in `frontend/src/index.css`
+- `.btn-icon` is explained in `Tutorials/button-style.md`
+
 ---
 
-## 3. Show it in the app
+## 3. Render the toggle globally (`frontend/src/index.tsx`)
 
-File:
-- `frontend/src/index.tsx`
-
-Add:
+Add import:
 
 ```tsx
 import { ThemeToggle } from "./components/ThemeToggle";
 ```
 
-Then render it inside `QueryClientProvider`:
+Then render it inside `QueryClientProvider` (above `Router`):
 
 ```tsx
 <QueryClientProvider client={client}>
@@ -98,13 +130,32 @@ Then render it inside `QueryClientProvider`:
 
 ## 4. Important cleanup
 
-In `frontend/src/components/layout.tsx`, replace hardcoded `text-black` with `text-white`.
+In `frontend/src/components/layout.tsx`, replace hardcoded color classes with theme-aware classes.
+
+Examples:
+
+- `text-black` -> `text-stone-800 dark:text-stone-300`
+- `focus:outline-black` -> `focus:outline-stone-700 dark:focus:outline-stone-300`
+- `outline-black` -> `outline-stone-700 dark:outline-stone-300`
+
+Tip: update one class at a time and refresh the browser so you can quickly see what changed.
 
 ---
 
 ## Result
 
-- default = dark grey + white text
-- dark mode = black + white text
+- default = `bg-emerald-100` + `text-stone-800`
+- dark mode = `dark:bg-slate-900` + `dark:text-stone-300`
 - toggle works globally
 - theme is saved in `localStorage`
+
+---
+
+## 5. Quick self-check (2 minutes)
+
+- Open app: light mode should be green-tinted with readable dark text.
+- Click toggle: background should switch to deep slate.
+- Reload page: selected mode should stay the same.
+- Navigate between pages: mode should still be applied.
+
+If dark mode does not activate, check that `@custom-variant dark (&:where(.dark, .dark *));` exists in `frontend/src/index.css`.
