@@ -11,7 +11,12 @@ export function PlayerOrGameMaster() {
       >
         Player
       </A>
-      <A href={ROUTES.secure.gameMaster.root}>Game-Master</A>
+      <A
+        class="inline-flex flex-1 justify-center rounded-xl border px-6 py-4 text-lg font-semibold"
+        href={ROUTES.secure.gameMaster.root}
+      >
+        Game-Master
+      </A>
     </>
   );
 }

@@ -50,7 +50,7 @@ export function Login() {
   return (
     <div class="flex h-[100dvh] flex-row items-center-safe justify-center">
       <form
-        class="bg-surface-color flex w-60 flex-col p-4 border-2 border-solid to-black"
+        class="bg-surface-color flex w-60 flex-col p-4 border-2 border-solid"
         onSubmit={handleLogin}
       >
         <h2 class="mb-3 text-xl">Login</h2>
@@ -74,7 +74,7 @@ export function Login() {
           required
         />
         <br />
-        <button class="border-2 border-solid to-black px-2 py-1" type="submit">
+        <button class="btn btn-primary w-full" type="submit">
           Login
         </button>
         <div>{message()}</div>

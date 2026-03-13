@@ -6,6 +6,13 @@
 }
 
 @layer base {
+    :root {                                                                                                                                                                     
+       --color-surface-color: #f8faf7;                                                                                                                                           
+     }
+
+     .dark {                                                                                                                                                                     
+       --color-surface-color: #1e293b;                                                                                                                                           
+     }
   body {
     @apply min-w-[810px] bg-sky-500 text-black  dark:bg-slate-900 dark:text-stone-300;
     /* light: green-tinted, dark: slate */
