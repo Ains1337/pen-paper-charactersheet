@@ -3,14 +3,15 @@ import "./index.css";
 import { render } from "solid-js/web";
 import "solid-devtools";
 import { Navigate, Route, Router } from "@solidjs/router";
-import { Login } from "./pages/Login";
+import { Login } from "./pages/login";
 import { QueryClient, QueryClientProvider } from "@tanstack/solid-query";
 import { PlayerOrGameMaster } from "./pages/player-or-game-master";
-import { AuthGuard } from "./lib/auth/AuthGuard";
+import { AuthGuard } from "./lib/auth/auth-guard";
 import { OverviewCharacters } from "./pages/player/overview-characters";
 import { RouteDebugger } from "./components/RouteDebugger";
 import { OverviewGroups } from "./pages/game-master/overview-groups";
 import { ROUTES } from "./lib/auth/routes";
+import { ThemeToggle } from "./components/theme-toggle";
 
 const root = document.getElementById("root");
 const client = new QueryClient();
@@ -24,6 +25,9 @@ if (import.meta.env.DEV && !(root instanceof HTMLElement)) {
 render(
   () => (
     <QueryClientProvider client={client}>
+      <div class="fixed right-4 top-4 z-50">
+        <ThemeToggle/>
+      </div>
       <Router>
         {/* public access */}
         <Route path="/login" component={Login}></Route>

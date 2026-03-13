@@ -1,17 +1,73 @@
 @import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
 @theme {
   --text-base: 3rem;
-
   --color-surface-color: #f8faf7;
 }
 
 @layer base {
   body {
-    @apply min-w-[810px] bg-emerald-100 text-stone-800  dark:bg-slate-900 dark:text-stone-300;
-    
+    @apply min-w-[810px] bg-sky-500 text-black  dark:bg-slate-900 dark:text-stone-300;
+    /* light: green-tinted, dark: slate */
   }
 
   h2 {
     @apply col-span-2 mb-3 text-xl;
+  }
+}
+@layer components {
+  /* @layer components:
+     this is the place for reusable UI classes like buttons, cards, badges */
+  .btn {
+    /* base button style for every button */
+    @apply inline-flex /* stays inline, but flex layout is usable*/
+    items-center /* center content vertically*/
+    justify-center /* center content horizontally*/
+    rounded-xl /* rounded corners*/
+    border /*visible border*/
+    px-4 /* left and right padding*/
+    py-2 /* top and bottom padding*/
+    font-semibold /* slightly bold text*/
+    transition-colors /* animate color changes on hover */
+    duration-200 /* animation speed = 200ms*/
+    disabled:cursor-not-allowed /* blocked cursor when disabled*/
+    disabled:opacity-50 /* faded look when disabled */;
+  }
+
+  .btn-choice {
+    /* Large choice button:
+    good for big role buttons like Player / Game-Master */
+    @apply min-h-14 w-full text-lg
+    /* min-h= minimum height
+        w-full = use full available width
+        text-lg= larger text */;
+  }
+  .btn-icon {
+    /* Small icon button:
+       good for a theme toggle with sun / moon symbol */
+    @apply h-10 w-10 p-0 text-xl;
+    /* h-10 = fixed height
+       w-10 = fixed width
+       p-0 = remove inner padding
+       text-xl = larger icon size */
+  }
+  .btn-primary {
+    /* Primary button:
+       use for main actions like Create and Save */
+    @apply border-emerald-700 bg-emerald-600 text-white hover:bg-emerald-700
+           dark:border-emerald-400 dark:bg-emerald-500 dark:text-slate-950 dark:hover:bg-emerald-400;
+  }
+  .btn-secondary {
+    /* Secondary button:
+       use for actions like Update */
+    @apply border-stone-400 bg-white text-stone-800 hover:bg-stone-100
+           dark:border-stone-500 dark:bg-slate-800 dark:text-stone-200 dark:hover:bg-slate-700;
+  }
+
+  .btn-add {
+    /* Add button:
+       use for Add skill / Add action / Add inventory / Add equipment */
+    @apply border-sky-600 bg-sky-500 text-white hover:bg-sky-600
+           dark:border-sky-400 dark:bg-sky-500 dark:text-slate-950 dark:hover:bg-sky-400;
   }
 }

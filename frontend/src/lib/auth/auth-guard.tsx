@@ -6,7 +6,7 @@
 import { Navigate } from "@solidjs/router";
 import { useQuery } from "@tanstack/solid-query";
 import { ParentProps, Show } from "solid-js";
-import { sessionQueryOptions } from "./sessionQueryOptions";
+import { sessionQueryOptions } from "./session-query-options";
 import { ROUTES } from "./routes";
 
 export function AuthGuard(props: ParentProps) {

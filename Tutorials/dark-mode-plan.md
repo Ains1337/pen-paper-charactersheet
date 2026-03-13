@@ -41,6 +41,34 @@ What this does:
 - Light mode (default): `bg-emerald-100 text-stone-800`
 - Dark mode (when `.dark` exists on `<html>`): `bg-slate-900 text-stone-300`
 
+### Short explanation of `@custom-variant dark (&:where(.dark, .dark *));`
+
+```css
+@custom-variant dark (&:where(.dark, .dark *));
+```
+
+What each part means:
+
+- `@custom-variant dark` = create a Tailwind variant called `dark`
+- `&` = the current element
+- `:where(...)` = group selectors with low CSS specificity
+- `.dark` = an element with class `dark`
+- `.dark *` = every child element inside `.dark`
+
+Simple meaning:
+
+- dark styles become active when the current element is inside something with class `.dark`
+
+Example:
+
+```html
+<html class="dark">
+  <button class="bg-white dark:bg-black">Click</button>
+</html>
+```
+
+Here `dark:bg-black` works because the button is inside `<html class="dark">`.
+
 ---
 
 ## 2. Create the toggle (`frontend/src/components/ThemeToggle.tsx`)

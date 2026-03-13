@@ -1,7 +1,7 @@
 import { useNavigate } from "@solidjs/router";
 import { useQuery } from "@tanstack/solid-query";
 import { createEffect, createSignal, onMount } from "solid-js";
-import { sessionQueryOptions } from "../lib/auth/sessionQueryOptions";
+import { sessionQueryOptions } from "../lib/auth/session-query-options";
 import { ROUTES } from "../lib/auth/routes";
 
 const [email, setEmail] = createSignal("");
