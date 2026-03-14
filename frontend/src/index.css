@@ -6,13 +6,13 @@
 }
 
 @layer base {
-    :root {                                                                                                                                                                     
-       --color-surface-color: #f8faf7;                                                                                                                                           
-     }
+  :root {
+    --color-surface-color: #f8faf7;
+  }
 
-     .dark {                                                                                                                                                                     
-       --color-surface-color: #1e293b;                                                                                                                                           
-     }
+  .dark {
+    --color-surface-color: #1e293b;
+  }
   body {
     @apply min-w-[810px] bg-sky-500 text-black  dark:bg-slate-900 dark:text-stone-300;
     /* light: green-tinted, dark: slate */
@@ -76,5 +76,21 @@
        use for Add skill / Add action / Add inventory / Add equipment */
     @apply border-sky-600 bg-sky-500 text-white hover:bg-sky-600
            dark:border-sky-400 dark:bg-sky-500 dark:text-slate-950 dark:hover:bg-sky-400;
+  }
+
+  /* always running automation left, right that mimics hover, A tag are visually bigger */
+  .role-link-float {
+    animation: role-link-float 3000ms ease-in-out infinite alternate;
+  }
+  .role-link-float-reverse {
+    animation: role-link-float 3000ms ease-in-out infinite alternate-reverse;
+  }
+  @keyframes role-link-float {
+    from {
+      transform: scale(1);
+    }
+    to {
+      transform: scale(1.2);
+    }
   }
 }

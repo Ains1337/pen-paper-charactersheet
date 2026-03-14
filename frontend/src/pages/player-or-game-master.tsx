@@ -12,18 +12,20 @@ export function PlayerOrGameMaster() {
           rounded-xl border px-6 py-4 text-xl font-semibold
            dark:text-red-500 text-fuchsia-800 
           
-           hover:scale-110 bg-amber-400 dark:bg-indigo-900"
-           href={ROUTES.secure.player.root}
-          // hover:scale-110: enlarge visually, h1 stays fixed
-           >
+           role-link-float-reverse transition-transform duration-200 bg-amber-400 dark:bg-indigo-900"
+          href={ROUTES.secure.player.root}
+          
+        >
           Player
         </A>
         <A
           class="min-w-60 inline-flex justify-center 
           items-center rounded-xl border px-6 py-4 text-xl 
           font-semibold dark:text-green-600
-           text-lime-900 hover:scale-110 bg-amber-400 dark:bg-indigo-900"
-          // hover:scale-110: enlarge visually, h1 stays fixed
+           text-lime-900 role-link-float
+           transition-transform duration-200 bg-amber-400
+            dark:bg-indigo-900"
+          
 
           href={ROUTES.secure.gameMaster.root}
         >
