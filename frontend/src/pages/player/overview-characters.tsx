@@ -1,13 +1,13 @@
 import { createSignal } from "solid-js";
 
-const [characterName, setCharacterName] = createSignal("");
 export function OverviewCharacters() {
+  const [characterName, setCharacterName] = createSignal("");
   const createCharacter = async (e: SubmitEvent) => {
     e.preventDefault();
   };
 
   return (
-    <div class="flex h-[5dvh] w-120 flex-col gap-10 border-2 border-solid-black">
+    <div class="flex h-[5dvh]  flex-col gap-10 border-2 border-solid-black">
       <h1 class="text-5xl">Overview Characters</h1>
       <form
         class="bg-surface-color flex h-60 w-60 flex-col p-2  items-center border-2 border-solid gap-5"
