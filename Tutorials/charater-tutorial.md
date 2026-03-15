@@ -2,418 +2,467 @@
 
 ## Goal
 
-Build a flexible character sheet flow in SolidJS.
+Build a beginner-friendly character sheet flow in SolidJS.
 
-- overview page only creates new characters by name
-- each character opens on one dynamic page
-- new character starts in edit mode
-- existing character starts read-only
-- each section has its own `Save` and `Update` buttons
-- temporary persistence uses `localStorage` in frontend dev mode
-- later the storage layer can be replaced by Go + SQLite
+The first milestone is small and clear:
 
-## What To Build
+- keep the overview page at `/secure/player/overview-characters`
+- open each character on `/secure/player/characters/:character-slug`
+- show the player layout on the character page
+- add one overview link and one `Skills` jump link in the layout
+- show one visible `Skills` section on the page
+- start with one input and buttons before building the full editor
 
-### Pages
+This tutorial is written for a fresh graduate junior developer.
+Read it top to bottom and build one step at a time.
 
-- `/secure/player/overview-characters`
-- `/secure/player/characters/:characterSlug`
+## What You Are Building
 
-### Main UI Rules
+The feature has two main pages:
 
-- overview page:
-  - one input for new character name
-  - one create button
-  - list all characters as `<A>` links
-- character detail page:
-  - endless vertical scroll layout
-  - separate sections like `Skills`, `Actions`, `Inventory`, `Equipment`
-  - each section has:
-    - `h1`
-    - `Save` button
-    - `Update` button
-    - labels
-    - inputs / textareas
-- new character:
-  - `name` is filled from overview page
-  - all other fields start empty
-  - page opens in edit mode
-- existing character:
-  - page opens read-only
-  - `Update` enables editing
-  - `Save` stores changes and locks the section again
+1. overview page
+2. character detail page
 
-## Key Architecture Rule
+### Overview page
 
-Do not create one `.tsx` file per character.
+This page is the entry point for players.
 
-Use:
+- it will later create new characters
+- it will later list existing characters
+- each character should open on one shared dynamic route
 
-- one dynamic route
-- one character data object
-- one storage layer
+### Character detail page
 
-This is the easiest setup and later makes backend migration much easier.
+This page shows one character.
 
-## Suggested File Structure
+- route: `/secure/player/characters/:character-slug`
+- it should use the shared `layout-player.tsx`
+- it should contain a `Skills` section
+- the layout should contain a jump link to that section
 
-- `frontend/src/index.tsx`
-- `frontend/src/pages/player/overview-characters.tsx`
-- `frontend/src/pages/player/character-detail.tsx`
-- `frontend/src/lib/characters.ts`
-- optional later:
-  - `frontend/src/components/character-section.tsx`
-  - `frontend/src/components/character-list-editor.tsx`
+## Before You Start
 
-## Data Model
+Make sure these folders matter to you:
 
-Start simple.
+- `frontend/` = the SolidJS app
+- `testing/` = the shared Bun frontend test workspace
+- `Tutorials/` = the learning and planning documents
 
-### Character
+Important naming decision:
 
-- `id`
-- `slug`
-- `name`
-- `age`
-- `gender`
-- `backgroundStory`
-- `skills`
-- `actions`
-- `inventory`
-- `equipment`
-- maybe `createdAt`
-- maybe `updatedAt`
+- use `:character-slug`
+- do not switch to `:characterSlug`
 
-### Skill
+Because the route param contains a hyphen, read it like this later:
 
-- `id`
-- `name`
-- `attackDamage`
-- `element`
-- `weapon`
-- `description`
+```ts
+const params = useParams();
+const slug = params["character-slug"];
+```
 
-### Action
+## Setup Step 1: Install Dependencies
 
-- `id`
-- `name`
-- `cost`
-- `range`
-- `effect`
-- `description`
+Root workspace install:
 
-### Inventory Item
+```bash
+bun install
+```
 
-- `id`
-- `name`
-- `amount`
-- `description`
+Frontend dev server:
 
-### Equipment Item
+```bash
+cd frontend
+bun run dev
+```
 
-- `id`
-- `name`
-- `slot`
-- `stats`
-- `description`
+Shared frontend tests later:
 
-### Section Item Rule
-
-For repeatable lists like skills, actions, inventory, equipment:
-
-- each item should have its own `id`
-- store them in arrays
-- start with an empty array `[]`
-
-## Why `localStorage` First
-
-Use `localStorage` only as a temporary frontend adapter.
-
-Good learning reason:
-
-- page components do not care where data comes from
-- later you replace only the data access functions
-- UI and routes can stay mostly unchanged
-
-Example abstraction idea:
-
-- `listCharacters()`
-- `createCharacter(name)`
-- `getCharacterBySlug(slug)`
-- `saveSkills(slug, skills)`
-- `saveActions(slug, actions)`
-- `saveInventory(slug, inventory)`
-- `saveEquipment(slug, equipment)`
-
-Later these functions can call Go endpoints instead of `localStorage`.
-
-## Learn In This Order
-
-1. Understand the route flow
-2. Define the data types
-3. Create the temporary storage layer
-4. Add the dynamic route
-5. Build the overview page
-6. Build the character detail page
-7. Add one section first: `Skills`
-8. Reuse the same pattern for `Actions`, `Inventory`, `Equipment`
-9. Add per-section edit/save logic
-10. Verify create, navigate, edit, save, reload
-
-## Implementation Checklist
-
-### 1. Route Planning
-
-#### `frontend/src/index.tsx`
-
-- [ ] keep `/secure/player/overview-characters`
-- [ ] add a dynamic route: `/secure/player/characters/:characterSlug`
-- [ ] connect that route to `CharacterDetail`
+```bash
+cd testing
+bun test
+```
 
 Learning point:
 
-- `:characterSlug` is a route param
-- one page can render many characters
+- the app code lives in `frontend/`
+- the shared Bun tests live in `testing/`
 
-### 2. Create Character Types
+## Setup Step 2: Understand The Route Flow
 
-#### `frontend/src/lib/characters.ts`
+The player flow should look like this:
 
-- [ ] define `Character`
-- [ ] define `Skill`
-- [ ] define `Action`
-- [ ] define `InventoryItem`
-- [ ] define `EquipmentItem`
-- [ ] give every repeatable item an `id`
+```text
+/secure/player/overview-characters
+  -> click a character
+  -> /secure/player/characters/:character-slug
+```
 
-Learning point:
+This is important because one page component can render many characters.
+You do not want one file per character.
 
-- types describe the shape of your data before UI code starts
+## Setup Step 3: Add The Dynamic Route With A Router-Level Layout
 
-### 3. Create Storage Helpers
+Later, `frontend/src/index.tsx` should keep the overview route and add the character detail route.
+For this feature, use `LayoutPlayer` as a parent route wrapper.
 
-#### `frontend/src/lib/characters.ts`
+Example:
 
-- [ ] add `listCharacters()`
-- [ ] add `createCharacter(name)`
-- [ ] add `getCharacterBySlug(slug)`
-- [ ] add `updateCharacterMeta(...)`
-- [ ] add `saveSkills(...)`
-- [ ] add `saveActions(...)`
-- [ ] add `saveInventory(...)`
-- [ ] add `saveEquipment(...)`
-- [ ] read/write through `localStorage`
+```tsx
+<Route path="player">
+  <Route
+    path="/"
+    component={() => (
+      <Navigate href={ROUTES.secure.player.OverviewCharacters} />
+    )}
+  />
 
-Learning point:
+  <Route
+    path="overview-characters"
+    component={OverviewCharacters}
+  />
 
-- keep storage logic out of page components
+  <Route path="characters" component={LayoutPlayer}>
+    <Route
+      path=":character-slug"
+      component={CharacterDetail}
+    />
+  </Route>
+</Route>
+```
 
-### 4. Build Overview Page
+What this teaches you:
 
-#### `frontend/src/pages/player/overview-characters.tsx`
+- `LayoutPlayer` can wrap the character pages at router level
+- `characters/:character-slug` is still the full final URL
+- `:character-slug` is the variable part of the URL
+- `CharacterDetail` is reused for all characters
 
-- [ ] add input for `new character name`
-- [ ] add create button
-- [ ] load all existing characters
-- [ ] render all characters as `<A>` links
-- [ ] on create:
-  - [ ] validate name is not empty
-  - [ ] create slug from name
-  - [ ] create new character object
-  - [ ] save character
-  - [ ] navigate to `/secure/player/characters/:characterSlug`
-  - [ ] mark it as new so detail page starts in edit mode
+## Setup Step 4: Keep Route Constants Readable
 
-Learning point:
+If you use the shared routes object, keep the player character route in hyphen style.
 
-- overview page should stay small and focused
+Example:
 
-### 5. Build Character Detail Page
+```ts
+export const ROUTES = {
+  secure: {
+    player: {
+      OverviewCharacters: "/secure/player/overview-characters",
+      newCharacter: "/secure/player/characters/:character-slug",
+    },
+  },
+} as const;
+```
 
-#### `frontend/src/pages/player/character-detail.tsx`
+Later, when you have a real slug value, replace the placeholder part.
 
-- [ ] use `useParams()` to get `characterSlug`
-- [ ] load character from storage
-- [ ] show fallback if character is missing
-- [ ] build a long vertical page layout
-- [ ] add general character fields near the top
-- [ ] add sections:
-  - [ ] `Skills`
-  - [ ] `Actions`
-  - [ ] `Inventory`
-  - [ ] `Equipment`
+Example helper idea:
 
-Learning point:
+```ts
+function characterDetailHref(slug: string) {
+  return `/secure/player/characters/${slug}`;
+}
+```
 
-- route params decide which data object to load
+## Setup Step 5: Create The Character Detail Page
 
-### 6. Implement Section Layout Pattern
+Later, create `frontend/src/pages/player/character-detail.tsx`.
 
-Each section should use the same structure.
+Start with a small version first.
+Because the router already wraps the page with `LayoutPlayer`, the page should only render its own content.
 
-- [ ] outer `div`
-- [ ] header row
-- [ ] `h1`
-- [ ] `Save` button
-- [ ] `Update` button
-- [ ] labels row
-- [ ] inputs row
-- [ ] repeatable item cards if needed
+Example:
+
+```tsx
+import { useParams } from "@solidjs/router";
+
+export function CharacterDetail() {
+  const params = useParams();
+  const slug = params["character-slug"];
+
+  return (
+    <div class="p-4">
+      <h1>Character: {slug}</h1>
+
+      <div id="skills" class="mt-6 rounded-md border p-4">
+        <h2>Skills</h2>
+
+        <label for="skill-name">Skill Name</label>
+        <input id="skill-name" type="text" />
+
+        <div class="mt-4 flex gap-2">
+          <button type="button">Save</button>
+          <button type="button">Update</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+```
+
+Why this is a good first version:
+
+- it proves the route works
+- it proves the router-level layout wraps the page
+- it proves the `Skills` section exists
+- it gives the jump link a real target with `id="skills"`
+
+## Setup Step 6: Let The Router Wrap The Page With `LayoutPlayer`
+
+`frontend/src/components/layout-player.tsx` should be used as a route wrapper, not as something that `CharacterDetail` imports and wraps manually.
+
+Example route shape:
+
+```tsx
+<Route path="player">
+  <Route path="characters" component={LayoutPlayer}>
+    <Route path=":character-slug" component={CharacterDetail} />
+  </Route>
+</Route>
+```
+
+This means:
+
+- `LayoutPlayer` provides the shell
+- `CharacterDetail` provides the page content
+- the page should not wrap itself with `LayoutPlayer` again
+
+## Setup Step 7: Fill The Player Layout
+
+`frontend/src/components/layout-player.tsx` should act like a reusable shell.
+
+It should own:
+
+- the top navigation
+- the logout button
+- the content wrapper through `props.children`
+
+It should not own the real page-specific `Skills` input fields.
 
 Example layout idea:
 
-- `div`
-- `div` header: title + buttons
-- `div` labels
-- `div` form inputs
-- `div` repeated entries
-- `div` add button
+```tsx
+import { A } from "@solidjs/router";
+
+export function LayoutPlayer(props: { children?: JSX.Element }) {
+  return (
+    <div>
+      <nav>
+        <A href="/secure/player/overview-characters">Overview Characters</A>
+        <A href="#skills">Skills</A>
+      </nav>
+
+      <main>{props.children}</main>
+    </div>
+  );
+}
+```
 
 Learning point:
 
-- reusable layout patterns reduce duplicated code
+- the layout is reusable
+- the page content stays separate
+- the jump link is inside the layout, but the target section lives inside the page
 
-### 7. Implement Read-Only and Edit Mode Per Section
+## Setup Step 8: Understand The Jump Link
 
-For each section:
+This is an important detail.
 
-- [ ] create its own `isEditing` signal
-- [ ] existing character starts with `false`
-- [ ] new character starts with `true`
-- [ ] `Update` sets `isEditing(true)`
-- [ ] `Save` stores only that section
-- [ ] after save, set `isEditing(false)`
-- [ ] disabled inputs when section is read-only
+Correct version:
+
+```tsx
+<A href="#skills">Skills</A>
+
+<div id="skills">
+  <h2>Skills</h2>
+</div>
+```
+
+Wrong version:
+
+```tsx
+<A href="#" id="skills">Skills</A>
+```
+
+Why the wrong version is wrong:
+
+- `href="#"` only points to the top of the page
+- putting `id="skills"` on the link does not create a target section
+
+## Setup Step 9: Start With A Tiny Skills Section
+
+Do not build the full character system at once.
+Start with the smallest visible version.
+
+Example starter section:
+
+```tsx
+<div id="skills" class="rounded-md border p-4">
+  <h2>Skills</h2>
+
+  <label for="skill-name">Skill Name</label>
+  <input id="skill-name" type="text" placeholder="Fireball" />
+
+  <div class="mt-4 flex gap-2">
+    <button type="button">Save</button>
+    <button type="button">Update</button>
+  </div>
+</div>
+```
+
+This is enough for the first milestone.
+You can add attack damage, element, weapon, and description later.
+
+## Setup Step 10: Prepare For Character Data
+
+Once the route and first section work, the next layer is data.
+
+Suggested file:
+
+- `frontend/src/lib/characters.ts`
+
+Start simple.
+
+Example types:
+
+```ts
+export type Skill = {
+  id: string;
+  name: string;
+  attackDamage: string;
+  element: string;
+  weapon: string;
+  description: string;
+};
+
+export type Character = {
+  id: string;
+  slug: string;
+  name: string;
+  skills: Skill[];
+};
+```
 
 Learning point:
 
-- state can be local to one section instead of global for the whole page
+- types define the shape of the data before the UI grows larger
 
-### 8. Implement Skills First
+## Setup Step 11: Use `localStorage` As The First Storage Layer
 
-#### Skills section
+For the first frontend-only version, `localStorage` is a good teaching tool.
 
-- [ ] heading `Skills`
-- [ ] `Save` button
-- [ ] `Update` button
-- [ ] labels:
-  - [ ] `Name`
-  - [ ] `Attack Damage`
-  - [ ] `Element`
-  - [ ] `Weapon`
-  - [ ] `Description`
-- [ ] inputs:
-  - [ ] text input
-  - [ ] text or number input
-  - [ ] text input
-  - [ ] text input
-  - [ ] textarea
-- [ ] add `Add skill` button
-- [ ] each skill renders in its own `div`
+Why:
 
-Learning point:
+- it works without backend setup
+- it lets you verify create, reload, and save behavior
+- later you can swap the storage layer without rewriting the whole UI
 
-- finish one full section first, then copy the pattern
+Example helper ideas:
 
-### 9. Reuse the Same Pattern for Other Sections
+```ts
+function listCharacters() {}
+function createCharacter(name: string) {}
+function getCharacterBySlug(slug: string) {}
+function saveSkills(slug: string, skills: Skill[]) {}
+```
 
-#### Actions
+At this stage, the main goal is separation of concerns:
 
-- [ ] build with separate repeated `div`s
-- [ ] own save/update buttons
-- [ ] own local edit state
+- page components render UI
+- storage helpers handle persistence
 
-#### Inventory
+## Setup Step 12: Build The Overview Page Later
 
-- [ ] same layout style as skills
-- [ ] own save/update buttons
-- [ ] own repeated item cards
+The overview page should stay small.
 
-#### Equipment
+Expected job of the page:
 
-- [ ] same layout style as skills
-- [ ] own save/update buttons
-- [ ] own repeated item cards
+- one input for a new character name
+- one create button
+- a list of characters as `<A>` links
 
-Learning point:
+Example idea:
 
-- reuse the same structure, only change the fields
+```tsx
+<A href={`/secure/player/characters/${character.slug}`}>
+  {character.name}
+</A>
+```
 
-### 10. Endless Scroll Behavior
+That link should open the shared dynamic detail page.
 
-- [ ] stack sections vertically
-- [ ] avoid pagination
-- [ ] let page height grow naturally
-- [ ] use normal browser page scrolling
+## Setup Step 13: Use TDD While Building
 
-Learning point:
+This repo now plans to use the shared Bun test workspace in `testing/`.
 
-- endless scroll here means one long form page, not infinite data loading
+Read these tutorial files together:
 
-## Good UI Behavior Rules
+- `Tutorials/TDD-plan.md`
+- `Tutorials/layout-plan.md`
 
-- `Save` is active only in edit mode
-- `Update` is active only in read-only mode
-- inputs are disabled when read-only
-- textarea is used for longer text like `description`
-- section data should not overwrite other sections when saving
+Recommended first tests later:
 
-## TDD Learning Path
+1. the character page route renders
+2. the router wraps the character page with `LayoutPlayer`
+3. the player layout shows `Overview Characters`
+4. the player layout shows `Skills`
+5. the `Skills` link uses `href="#skills"`
+6. the page contains a visible section with `id="skills"`
 
-The repo currently does not have a frontend test runner, so the first testing step is setup.
+## Good UI Rules For This Feature
 
-### Test order
+- keep the page mobile first
+- stack sections vertically first
+- use visible headings
+- use clear button text
+- keep the layout reusable
+- keep page-specific content out of the shared layout
 
-1. storage helper tests
-2. slug creation tests
-3. create-character tests
-4. get-by-slug tests
-5. section save tests
-6. detail page behavior tests later
+## Step-By-Step Build Order
 
-### First tests to write
+If you want a calm build order later, follow this sequence:
 
-- [ ] creating a character stores `name`
-- [ ] new character defaults other fields to empty values
-- [ ] slug is generated from name
-- [ ] loading by slug returns correct character
-- [ ] saving `skills` updates only `skills`
-- [ ] saving `inventory` updates only `inventory`
+1. understand the route flow
+2. add the dynamic route with router-level `LayoutPlayer`
+3. create the page component
+4. keep `CharacterDetail` focused on page content only
+5. add the overview link to the layout
+6. add the `Skills` jump link to the layout
+7. add the visible `Skills` section with `id="skills"`
+8. add one input and buttons
+9. test the route and jump link behavior
+10. add real character storage after the first UI works
 
 ## Manual Verify Checklist
 
-- [ ] open `/secure/player/overview-characters`
-- [ ] type a new character name
-- [ ] click create
-- [ ] confirm redirect to character detail page
-- [ ] confirm new page starts in edit mode
-- [ ] confirm all other fields are empty
-- [ ] add one skill and save only `Skills`
-- [ ] reload browser
-- [ ] confirm skill still exists from `localStorage`
-- [ ] confirm `Actions`, `Inventory`, `Equipment` are unchanged
-- [ ] open existing character again
-- [ ] confirm page starts read-only
-- [ ] click `Update` for one section
-- [ ] confirm only that section becomes editable
+When the real implementation exists later, verify these steps:
+
+- open `/secure/player/overview-characters`
+- open a character detail URL with a slug
+- confirm the player layout is visible
+- confirm the overview link is visible
+- confirm the `Skills` link is visible
+- click `Skills`
+- confirm the browser jumps to the `Skills` section
+- confirm the `Skills` section shows one input and buttons
 
 ## Junior Dev Takeaways
 
-- routes decide which component renders
-- params decide which character to load
-- data types define the object shape
-- one storage layer hides implementation details
-- local UI state controls edit/read-only behavior
-- repeated sections are easier when you reuse the same pattern
+- one dynamic route is better than one file per character
+- route params decide which character to load
+- a reusable layout should not own page-specific form details
+- router-level wrapping is a clean way to reuse one layout for many character pages
+- jump links work through matching `href="#..."` and `id="..."`
+- small first milestones are easier to build and debug
 
-## Later Backend Migration
+## Later Extension Ideas
 
-When Go + SQLite are ready:
+After the first `Skills` milestone works, you can grow the page with:
 
-- keep the same page components
-- keep the same route structure
-- replace `localStorage` calls inside the data layer
-- move persistence to API endpoints
-- let SQLite become the real source of truth
-
-That is why the storage layer should stay separate from the UI.
+- full skill fields
+- `Actions`
+- `Inventory`
+- `Equipment`
+- read-only and edit mode per section
+- `localStorage` helpers
+- later backend migration to Go + SQLite

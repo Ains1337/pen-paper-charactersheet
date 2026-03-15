@@ -1,18 +1,17 @@
 import { A, useNavigate } from "@solidjs/router";
 import { JSX } from "solid-js";
-import { AuthGuard } from "../lib/auth/auth-guard";
 import { ROUTES } from "../lib/auth/routes";
 // import character image from database?
 // children? = optional, no strict type binding
 // Navigation with links in a horizontal layout
 
-export function Layout(props: {
+export function LayoutPlayer(props: {
   children?: JSX.Element | JSX.Element[] | string;
 }) {
   const navigate = useNavigate();
 
   return (
-    <AuthGuard>
+    <>
       {/* <RouteDebugger /> */}
       {/* Outer flexbox with 3 columns: left, center, right */}
       <div class="flex min-h-screen w-full flex-row flex-nowrap gap-5">
@@ -109,6 +108,6 @@ export function Layout(props: {
           </A>
         </div>
       </div>
-    </AuthGuard>
+</>    
   );
 }
