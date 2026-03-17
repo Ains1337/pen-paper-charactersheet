@@ -26,10 +26,10 @@ export function LayoutPlayer(props: {
         <div class="flex min-w-0 flex-1 flex-col gap-5">
           {/* mx-auto only works with max-w and a fixed width, centers the element,
         with equal spacing on the left and right */}
-          <div class="mx-auto flex flex-shrink-0 flex-row flex-nowrap items-center-safe gap-5">
+          <div class="ml-4 flex flex-shrink-0 flex-row flex-nowrap items-center-safe gap-5">
             <nav class="bg-surface-color flex w-200 flex-row flex-wrap justify-between rounded-md p-4">
               <A
-                class="text-black hover:underline hover:underline-offset-3 focus:outline-2 focus:outline-offset-4 focus:outline-black"
+                class="hover:underline hover:underline-offset-3 focus:outline-2 focus:outline-offset-4 focus:outline-black"
                 // activeClass="outline-black outline-1 outline-offset-4"
                 href={ROUTES.secure.player.overviewCharacters}
                 rel="noopener noreferrer"
@@ -39,7 +39,7 @@ export function LayoutPlayer(props: {
               {/*href={slug+"#stats"}  is necessary with a green "A"-Tag,
                <a href="#skills">Skill</a> works on the same page  */}
               <A
-                class="text-black hover:underline hover:underline-offset-3 focus:outline-2 focus:outline-offset-4 focus:outline-black"
+                class="hover:underline hover:underline-offset-3 focus:outline-2 focus:outline-offset-4 focus:outline-black"
                 // activeClass="outline-black outline-1 outline-offset-4"
                 href={slug + "#stats"}
               >
@@ -48,21 +48,21 @@ export function LayoutPlayer(props: {
               </A>
 
               <A
-                class="text-black hover:underline hover:underline-offset-3 focus:outline-2 focus:outline-offset-4 focus:outline-black"
+                class="hover:underline hover:underline-offset-3 focus:outline-2 focus:outline-offset-4 focus:outline-black"
                 //activeClass="outline-black outline-1 outline-offset-4"
                 href={slug + "#skills"}
               >
                 Skills
               </A>
               <A
-                class="text-black hover:underline hover:underline-offset-3 focus:outline-2 focus:outline-offset-4 focus:outline-black"
+                class="hover:underline hover:underline-offset-3 focus:outline-2 focus:outline-offset-4 focus:outline-black"
                 //activeClass="outline-black outline-1 outline-offset-4"
                 href={slug + "#actions"}
               >
                 Actions
               </A>
               <A
-                class="text-black hover:underline hover:underline-offset-3 focus:outline-2 focus:outline-offset-4 focus:outline-black"
+                class="hover:underline hover:underline-offset-3 focus:outline-2 focus:outline-offset-4 focus:outline-black"
                 //activeClass="outline-black outline-1 outline-offset-4"
                 href={slug + "#background"}
               >
@@ -70,21 +70,21 @@ export function LayoutPlayer(props: {
               </A>
 
               <A
-                class="text-black hover:underline hover:underline-offset-3 focus:outline-2 focus:outline-offset-4 focus:outline-black"
+                class="hover:underline hover:underline-offset-3 focus:outline-2 focus:outline-offset-4 focus:outline-black"
                 //activeClass="outline-black outline-1 outline-offset-4"
                 href={slug + "#inventory"}
               >
                 Inventory
               </A>
               <A
-                class="text-black hover:underline hover:underline-offset-3 focus:outline-2 focus:outline-offset-4 focus:outline-black"
+                class="hover:underline hover:underline-offset-3 focus:outline-2 focus:outline-offset-4 focus:outline-black"
                 //activeClass="outline-black outline-1 outline-offset-4"
                 href={slug + "#gear"}
               >
                 Gear
               </A>
               <A
-                class="text-black hover:underline hover:underline-offset-3 focus:outline-2 focus:outline-offset-4 focus:outline-black"
+                class="hover:underline hover:underline-offset-3 focus:outline-2 focus:outline-offset-4 focus:outline-black"
                 //activeClass="outline-black outline-1 outline-offset-4"
                 href={slug + "#history"}
               >
@@ -100,7 +100,7 @@ export function LayoutPlayer(props: {
         {/* Right column: logout button */}
         <div class="">
           <A
-            class="text-primary bg-surface-color m-4 block rounded-md p-4 font-bold hover:underline hover:underline-offset-3 focus:outline-2 focus:outline-offset-4 focus:outline-black"
+            class=" bg-surface-color m-4 block rounded-md p-4 font-bold hover:underline hover:underline-offset-3 focus:outline-2 focus:outline-offset-4 focus:outline-black"
             href="#"
             rel="noopener noreferrer"
             onClick={() => {
