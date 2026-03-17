@@ -7,7 +7,7 @@ export function OverviewCharacters() {
   };
 
   return (
-    <div class="flex h-[5dvh]  flex-col gap-10 border-2 border-solid-black">
+    <div class="flex flex-col gap-10 p-4 border-2 border-solid-black ">
       <h1 class="text-5xl">Overview Characters</h1>
       <form
         class="bg-surface-color flex h-60 w-60 flex-col p-2  items-center border-2 border-solid gap-5"
@@ -26,6 +26,10 @@ export function OverviewCharacters() {
           Create
         </button>
       </form>
+      <div>
+        <h1 class="text-4xl">Character-List</h1>
+        <a href="">put existing Characters as A tag with link to detail character page here</a>
+      </div>
     </div>
   );
 }

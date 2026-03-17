@@ -29,55 +29,63 @@ export function LayoutPlayer(props: {
               <A
                 class="text-black hover:underline hover:underline-offset-3 focus:outline-2 focus:outline-offset-4 focus:outline-black"
                 activeClass="outline-black outline-1 outline-offset-4"
-                href={ROUTES.secure.root}
+                href={ROUTES.secure.player.OverviewCharacters}
                 rel="noopener noreferrer"
               >
+                Overview Characters
                 <br />
               </A>
               <A
                 class="text-black hover:underline hover:underline-offset-3 focus:outline-2 focus:outline-offset-4 focus:outline-black"
                 activeClass="outline-black outline-1 outline-offset-4"
-                href={ROUTES.secure.root}
-                rel="noopener noreferrer"
+                href="#stats"
               >
-                <br />
-              </A>
-
-              <A
-                class="text-black hover:underline hover:underline-offset-3 focus:outline-2 focus:outline-offset-4 focus:outline-black"
-                activeClass="outline-black outline-1 outline-offset-4"
-                href={ROUTES.secure.root}
-                rel="noopener noreferrer"
-              >
-                <br />
-              </A>
-              <A
-                class="text-black hover:underline hover:underline-offset-3 focus:outline-2 focus:outline-offset-4 focus:outline-black"
-                activeClass="outline-black outline-1 outline-offset-4"
-                href={ROUTES.secure.root}
-                rel="noopener noreferrer"
-              >
-                Overview:
-                <br />
-              </A>
-              <A
-                class="text-black hover:underline hover:underline-offset-3 focus:outline-2 focus:outline-offset-4 focus:outline-black"
-                activeClass="outline-black outline-1 outline-offset-4"
-                href={ROUTES.secure.root}
-                rel="noopener noreferrer"
-              >
-                Overview:
+                Stats
                 <br />
               </A>
 
               <A
                 class="text-black hover:underline hover:underline-offset-3 focus:outline-2 focus:outline-offset-4 focus:outline-black"
                 activeClass="outline-black outline-1 outline-offset-4"
-                href={ROUTES.secure.root}
-                rel="noopener noreferrer"
+                href="#skills"
               >
-                Overview:
-                <br />
+                Skills
+              </A>
+              <A
+                class="text-black hover:underline hover:underline-offset-3 focus:outline-2 focus:outline-offset-4 focus:outline-black"
+                activeClass="outline-black outline-1 outline-offset-4"
+                href="#actions"
+              >
+                Actions
+              </A>
+              <A
+                class="text-black hover:underline hover:underline-offset-3 focus:outline-2 focus:outline-offset-4 focus:outline-black"
+                activeClass="outline-black outline-1 outline-offset-4"
+                href="#background"
+              >
+                Background
+              </A>
+
+              <A
+                class="text-black hover:underline hover:underline-offset-3 focus:outline-2 focus:outline-offset-4 focus:outline-black"
+                activeClass="outline-black outline-1 outline-offset-4"
+                href="#inventory"
+              >
+                Inventory
+              </A>
+              <A
+                class="text-black hover:underline hover:underline-offset-3 focus:outline-2 focus:outline-offset-4 focus:outline-black"
+                activeClass="outline-black outline-1 outline-offset-4"
+                href="#gear"
+              >
+                Gear
+              </A>
+              <A
+                class="text-black hover:underline hover:underline-offset-3 focus:outline-2 focus:outline-offset-4 focus:outline-black"
+                activeClass="outline-black outline-1 outline-offset-4"
+                href="#history"
+              >
+                History
               </A>
             </nav>
           </div>
@@ -108,6 +116,6 @@ export function LayoutPlayer(props: {
           </A>
         </div>
       </div>
-</>    
+    </>
   );
 }
