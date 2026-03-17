@@ -30,6 +30,23 @@ export function OverviewCharacters() {
         <h1 class="text-4xl">Character-List</h1>
         <a href="">put existing Characters as A tag with link to detail character page here</a>
       </div>
+      <form
+        class="bg-surface-color flex h-60 w-60 flex-col p-2  items-center border-2 border-solid gap-5"
+        onSubmit={createCharacter}
+      >
+        <h2>Delete Character permanently</h2>
+        <label>Name:</label>
+        <input
+          class="border-2 border-solid border-blue-500 placeholder-black dark:placeholder-white"
+          placeholder="Happy"
+          type="text"
+          value={characterName()}
+          onInput={(e) => setCharacterName(e.target.value)}
+        />
+        <button class="btn btn-secondary w-20" type="submit">
+          Delete
+        </button>
+      </form>
     </div>
   );
 }

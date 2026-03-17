@@ -12,7 +12,7 @@ export function PlayerOrGameMaster() {
           rounded-xl border px-6 py-4 text-xl font-semibold
            dark:text-red-500 text-fuchsia-800 
           
-           role-link-float-reverse transition-transform duration-200 bg-amber-400 dark:bg-indigo-900"
+           role-link-float-reverse transition-transform duration-200 bg-amber-300 dark:bg-indigo-900"
           href={ROUTES.secure.player.root}
           
         >
@@ -23,7 +23,7 @@ export function PlayerOrGameMaster() {
           items-center rounded-xl border px-6 py-4 text-xl 
           font-semibold dark:text-green-600
            text-lime-900 role-link-float
-           transition-transform duration-200 bg-amber-400
+           transition-transform duration-200 bg-amber-300
             dark:bg-indigo-900"
           
 

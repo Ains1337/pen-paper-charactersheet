@@ -1,4 +1,4 @@
-import { A, useNavigate } from "@solidjs/router";
+import { A, useNavigate, useParams } from "@solidjs/router";
 import { JSX } from "solid-js";
 import { ROUTES } from "../lib/auth/routes";
 // import character image from database?
@@ -9,6 +9,8 @@ export function LayoutPlayer(props: {
   children?: JSX.Element | JSX.Element[] | string;
 }) {
   const navigate = useNavigate();
+  const params = useParams();
+  const slug = params.characterSlug;
 
   return (
     <>
@@ -25,20 +27,21 @@ export function LayoutPlayer(props: {
           {/* mx-auto only works with max-w and a fixed width, centers the element,
         with equal spacing on the left and right */}
           <div class="mx-auto flex flex-shrink-0 flex-row flex-nowrap items-center-safe gap-5">
-            <nav class="bg-surface-color flex w-200 flex-row flex-wrap justify-between gap-10.5 rounded-md p-4">
+            <nav class="bg-surface-color flex w-200 flex-row flex-wrap justify-between rounded-md p-4">
               <A
                 class="text-black hover:underline hover:underline-offset-3 focus:outline-2 focus:outline-offset-4 focus:outline-black"
-                activeClass="outline-black outline-1 outline-offset-4"
-                href={ROUTES.secure.player.OverviewCharacters}
+                // activeClass="outline-black outline-1 outline-offset-4"
+                href={ROUTES.secure.player.overviewCharacters}
                 rel="noopener noreferrer"
               >
                 Overview Characters
-                <br />
               </A>
+              {/*href={slug+"#stats"}  is necessary with a green "A"-Tag,
+               <a href="#skills">Skill</a> works on the same page  */}
               <A
                 class="text-black hover:underline hover:underline-offset-3 focus:outline-2 focus:outline-offset-4 focus:outline-black"
-                activeClass="outline-black outline-1 outline-offset-4"
-                href="#stats"
+                // activeClass="outline-black outline-1 outline-offset-4"
+                href={slug + "#stats"}
               >
                 Stats
                 <br />
@@ -46,44 +49,44 @@ export function LayoutPlayer(props: {
 
               <A
                 class="text-black hover:underline hover:underline-offset-3 focus:outline-2 focus:outline-offset-4 focus:outline-black"
-                activeClass="outline-black outline-1 outline-offset-4"
-                href="#skills"
+                //activeClass="outline-black outline-1 outline-offset-4"
+                href={slug + "#skills"}
               >
                 Skills
               </A>
               <A
                 class="text-black hover:underline hover:underline-offset-3 focus:outline-2 focus:outline-offset-4 focus:outline-black"
-                activeClass="outline-black outline-1 outline-offset-4"
-                href="#actions"
+                //activeClass="outline-black outline-1 outline-offset-4"
+                href={slug + "#actions"}
               >
                 Actions
               </A>
               <A
                 class="text-black hover:underline hover:underline-offset-3 focus:outline-2 focus:outline-offset-4 focus:outline-black"
-                activeClass="outline-black outline-1 outline-offset-4"
-                href="#background"
+                //activeClass="outline-black outline-1 outline-offset-4"
+                href={slug + "#background"}
               >
                 Background
               </A>
 
               <A
                 class="text-black hover:underline hover:underline-offset-3 focus:outline-2 focus:outline-offset-4 focus:outline-black"
-                activeClass="outline-black outline-1 outline-offset-4"
-                href="#inventory"
+                //activeClass="outline-black outline-1 outline-offset-4"
+                href={slug + "#inventory"}
               >
                 Inventory
               </A>
               <A
                 class="text-black hover:underline hover:underline-offset-3 focus:outline-2 focus:outline-offset-4 focus:outline-black"
-                activeClass="outline-black outline-1 outline-offset-4"
-                href="#gear"
+                //activeClass="outline-black outline-1 outline-offset-4"
+                href={slug + "#gear"}
               >
                 Gear
               </A>
               <A
                 class="text-black hover:underline hover:underline-offset-3 focus:outline-2 focus:outline-offset-4 focus:outline-black"
-                activeClass="outline-black outline-1 outline-offset-4"
-                href="#history"
+                //activeClass="outline-black outline-1 outline-offset-4"
+                href={slug + "#history"}
               >
                 History
               </A>

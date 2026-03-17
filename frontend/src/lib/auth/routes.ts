@@ -9,10 +9,10 @@ export const ROUTES = {
     player: {
       root: "/secure/player",
       // fill in all player related pages from folder pages/player
-      OverviewCharacters: "/secure/player/overview-characters",
+      overviewCharacters: "/secure/player/overview-characters",
       // implement route for variable new character
       // slug= a self explanatory short term
-      newCharacter: "/secure/player/characters/:character-slug",
+      characterDetail: "/secure/player/characters/:characterSlug",
       //add next player page here
     },
     gameMaster: {

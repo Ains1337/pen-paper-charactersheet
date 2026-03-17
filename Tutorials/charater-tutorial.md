@@ -174,8 +174,6 @@ Because the router already wraps the page with `LayoutPlayer`, the page should o
 Example:
 
 ```tsx
-import { useParams } from "@solidjs/router";
-
 export function CharacterDetail() {
   const params = useParams();
   const slug = params["character-slug"];
@@ -197,7 +195,9 @@ export function CharacterDetail() {
       </div>
     </div>
   );
-}
+} { useParams } from "@solidjs/router";
+
+
 ```
 
 Why this is a good first version:
@@ -295,7 +295,7 @@ Do not build the full character system at once.
 Start with the smallest visible version.
 
 Example starter section:
-
+S
 ```tsx
 <div id="skills" class="rounded-md border p-4">
   <h2>Skills</h2>

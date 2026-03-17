@@ -12,6 +12,8 @@ import { RouteDebugger } from "./components/RouteDebugger";
 import { OverviewGroups } from "./pages/game-master/overview-groups";
 import { ROUTES } from "./lib/auth/routes";
 import { ThemeToggle } from "./components/theme-toggle";
+import { LayoutPlayer } from "./components/layout-player";
+import { CharacterDetail } from "./pages/player/character-detail";
 
 const root = document.getElementById("root");
 const client = new QueryClient();
@@ -26,7 +28,7 @@ render(
   () => (
     <QueryClientProvider client={client}>
       <div class="fixed right-4 top-4 z-50">
-        <ThemeToggle/>
+        <ThemeToggle />
       </div>
       <Router>
         {/* public access */}
@@ -51,7 +53,7 @@ render(
             <Route
               path="/"
               component={() => (
-                <Navigate href={ROUTES.secure.player.OverviewCharacters} />
+                <Navigate href={ROUTES.secure.player.overviewCharacters} />
               )}
             ></Route>
             <Route
@@ -60,6 +62,15 @@ render(
             ></Route>
             {/* placeholder for next player page */}
             <></>
+            <Route path="characters" component={LayoutPlayer}>
+              <Route
+                path="/"
+                component={() => (
+                  <Navigate href={ROUTES.secure.player.overviewCharacters} />
+                )}
+              ></Route>
+              <Route path=":characterSlug" component={CharacterDetail}></Route>
+            </Route>
           </Route>
           {/*  access to all pages in folder game-master*/}
           <Route path="game-master">
