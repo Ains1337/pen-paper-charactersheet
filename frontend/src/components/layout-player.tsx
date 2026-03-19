@@ -27,7 +27,7 @@ export function LayoutPlayer(props: {
         <div class="flex min-w-0 flex-1 flex-col gap-5">
           {/* mx-auto only works with max-w and a fixed width, centers the element,
         with equal spacing on the left and right */}
-          <div class="ml-4 flex flex-shrink-0 flex-row  items-center-safe gap-5 w-[100dvw]">
+          <div class="ml-4 flex flex-shrink-0 flex-row  items-center-safe gap-5 w-[100dvw] fixed">
             <nav class="bg-surface-color flex w-200 flex-row flex-wrap justify-between rounded-md p-4">
               <A
                 class="hover:underline hover:underline-offset-3 focus:outline-2 focus:outline-offset-4 focus:outline-black"

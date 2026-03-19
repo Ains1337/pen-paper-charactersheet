@@ -283,7 +283,7 @@ export function CharacterDetail() {
               onInput={(e) => setSkillDescription(e.target.value)}
             />
           </div><div class="flex flex-col gap-2">
-            <label>Name test</label>
+            <label>Name</label>
             <input
               class="border-2 border-solid border-blue-500 placeholder-gray-500 dark:placeholder-gray-400"
               placeholder="Fireball"
