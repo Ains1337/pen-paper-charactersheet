@@ -27,7 +27,7 @@ if (import.meta.env.DEV && !(root instanceof HTMLElement)) {
 render(
   () => (
     <QueryClientProvider client={client}>
-      <div class="fixed right-4 top-4 z-50">
+      <div class="fixed right-32 z-50">
         <ThemeToggle />
       </div>
       <Router>

@@ -16,7 +16,7 @@ export function LayoutPlayer(props: {
     <>
       {/* <RouteDebugger /> */}
       {/* Outer flexbox with 3 columns: left, center, right */}
-      <div class="flex min-h-screen w-full flex-row flex-nowrap gap-5">
+      <div class="flex min-h-screen w-full flex-row flex-nowrap gap-5 mt-5">
         {/* Left column: character image/picture */}
         {/* <div>
           <img class="m-4 w-20 min-w-20" src={}></img>
@@ -100,7 +100,7 @@ export function LayoutPlayer(props: {
         {/* Right column: logout button */}
         <div class="">
           <A
-            class=" bg-surface-color m-4 block rounded-md p-4 font-bold hover:underline hover:underline-offset-3 focus:outline-2 focus:outline-offset-4 focus:outline-black"
+            class=" bg-surface-color mr-4 block rounded-md p-4 font-bold hover:underline hover:underline-offset-3 focus:outline-2 focus:outline-offset-4 focus:outline-black"
             href="#"
             rel="noopener noreferrer"
             onClick={() => {
