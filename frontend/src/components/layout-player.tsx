@@ -1,6 +1,7 @@
 import { A, useNavigate, useParams } from "@solidjs/router";
 import { JSX } from "solid-js";
 import { ROUTES } from "../lib/auth/routes";
+import { ThemeToggle } from "./theme-toggle";
 // import character image from database?
 // children? = optional, no strict type binding
 // Navigation with links in a horizontal layout
@@ -16,7 +17,7 @@ export function LayoutPlayer(props: {
     <>
       {/* <RouteDebugger /> */}
       {/* Outer flexbox with 3 columns: left, center, right */}
-      <div class="flex min-h-screen w-full flex-row flex-nowrap gap-5 mt-5">
+      <div class="flex min-h-screen w-full flex-col gap-5 mt-5">
         {/* Left column: character image/picture */}
         {/* <div>
           <img class="m-4 w-20 min-w-20" src={}></img>
@@ -26,7 +27,7 @@ export function LayoutPlayer(props: {
         <div class="flex min-w-0 flex-1 flex-col gap-5">
           {/* mx-auto only works with max-w and a fixed width, centers the element,
         with equal spacing on the left and right */}
-          <div class="ml-4 flex flex-shrink-0 flex-row flex-nowrap items-center-safe gap-5">
+          <div class="ml-4 flex flex-shrink-0 flex-row  items-center-safe gap-5 w-[100dvw]">
             <nav class="bg-surface-color flex w-200 flex-row flex-wrap justify-between rounded-md p-4">
               <A
                 class="hover:underline hover:underline-offset-3 focus:outline-2 focus:outline-offset-4 focus:outline-black"
@@ -91,32 +92,31 @@ export function LayoutPlayer(props: {
                 History
               </A>
             </nav>
+            <ThemeToggle></ThemeToggle>
+            <div class="">
+              <A
+                class=" bg-surface-color mr-4 block rounded-md p-4 font-bold hover:underline hover:underline-offset-3 focus:outline-2 focus:outline-offset-4 focus:outline-black"
+                href="#"
+                rel="noopener noreferrer"
+                onClick={() => {
+                  fetch("/api/auth/logout", {
+                    method: "POST",
+                  })
+                    .then(() => {
+                      navigate(ROUTES.login);
+                    })
+                    .catch((error) => {
+                      console.error("Logout Error", error);
+                    });
+                }}
+              >
+                Logout
+              </A>
+            </div>
           </div>
 
           {/* Page content */}
-          <div class="min-w-0 flex-1 overflow-x-auto">{props.children}</div>
-        </div>
-
-        {/* Right column: logout button */}
-        <div class="">
-          <A
-            class=" bg-surface-color mr-4 block rounded-md p-4 font-bold hover:underline hover:underline-offset-3 focus:outline-2 focus:outline-offset-4 focus:outline-black"
-            href="#"
-            rel="noopener noreferrer"
-            onClick={() => {
-              fetch("/api/auth/logout", {
-                method: "POST",
-              })
-                .then(() => {
-                  navigate(ROUTES.login);
-                })
-                .catch((error) => {
-                  console.error("Logout Error", error);
-                });
-            }}
-          >
-            Logout
-          </A>
+          <div class="min-w-0 flex-1 overflow-x-auto mt-15">{props.children}</div>
         </div>
       </div>
     </>

@@ -27,9 +27,7 @@ if (import.meta.env.DEV && !(root instanceof HTMLElement)) {
 render(
   () => (
     <QueryClientProvider client={client}>
-      <div class="fixed right-32 z-50">
-        <ThemeToggle />
-      </div>
+      
       <Router>
         {/* public access */}
         <Route path="/login" component={Login}></Route>
