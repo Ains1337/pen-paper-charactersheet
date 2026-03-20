@@ -27,7 +27,11 @@ if (import.meta.env.DEV && !(root instanceof HTMLElement)) {
 render(
   () => (
     <QueryClientProvider client={client}>
-      
+      {/* pointer-events-none: makes nav clickable */}
+      <div class="fixed top-11 left-4 z-50 flex items-center gap-5 pointer-events-none">
+        <div class="w-200 h-14" aria-hidden="true"></div>
+        <ThemeToggle />
+      </div>
       <Router>
         {/* public access */}
         <Route path="/login" component={Login}></Route>

@@ -92,7 +92,7 @@ export function LayoutPlayer(props: {
                 History
               </A>
             </nav>
-            <ThemeToggle></ThemeToggle>
+            <div class="h-10 w-10"></div>
             <div class="">
               <A
                 class=" bg-surface-color mr-4 block rounded-md p-4 font-bold hover:underline hover:underline-offset-3 focus:outline-2 focus:outline-offset-4 focus:outline-black"

@@ -237,9 +237,9 @@ export function CharacterDetail() {
             />
           </div>
 
-<div class="col-span-4"><hr class="border-1 border-dashed border-red-700 dark:border-emerald-400" />
-
-</div>
+          <div class="col-span-4">
+            <hr class="border-1 border-dashed border-red-700 dark:border-emerald-400" />
+          </div>
 
           <div class="flex flex-col gap-2">
             <label>Name</label>
@@ -282,7 +282,8 @@ export function CharacterDetail() {
               value={skillDescription()}
               onInput={(e) => setSkillDescription(e.target.value)}
             />
-          </div><div class="flex flex-col gap-2">
+          </div>
+          <div class="flex flex-col gap-2">
             <label>Name</label>
             <input
               class="border-2 border-solid border-blue-500 placeholder-gray-500 dark:placeholder-gray-400"
@@ -325,10 +326,22 @@ export function CharacterDetail() {
             />
           </div>
         </div>
-
-        <button class="btn bg-amber-400 dark:bg-amber-700 w-40" type="button">
-          Add New Skill
-        </button>
+        <div class="flex gap-5">
+          <button class="btn bg-amber-400 dark:bg-amber-700 w-40" type="button">
+            Add New Skill
+          </button>
+          <button class="btn bg-red-400 dark:bg-red-700 w-40" type="submit">
+            Delete Skill
+          </button>
+          
+          <input
+              class="border-2 border-solid border-blue-500 placeholder-gray-500 dark:placeholder-gray-400"
+              placeholder="Type Skill Name to delete"
+              type="text"
+              value=""
+              // onInput={(e) => setSkillWeapon(e.target.value)}
+            />
+        </div>
       </form>
     </div>
   );
