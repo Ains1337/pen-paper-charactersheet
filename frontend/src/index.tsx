@@ -8,12 +8,11 @@ import { QueryClient, QueryClientProvider } from "@tanstack/solid-query";
 import { PlayerOrGameMaster } from "./pages/player-or-game-master";
 import { AuthGuard } from "./lib/auth/auth-guard";
 import { OverviewCharacters } from "./pages/player/overview-characters";
-import { RouteDebugger } from "./components/RouteDebugger";
 import { OverviewGroups } from "./pages/game-master/overview-groups";
 import { ROUTES } from "./lib/auth/routes";
-import { ThemeToggle } from "./components/theme-toggle";
 import { LayoutPlayer } from "./components/layout-player";
 import { CharacterDetail } from "./pages/player/character-detail";
+import { DarkModeToggleIcon } from "./components/dark-mode-toggle-icon";
 
 const root = document.getElementById("root");
 const client = new QueryClient();
@@ -28,42 +27,48 @@ render(
   () => (
     <QueryClientProvider client={client}>
       {/* pointer-events-none: makes nav clickable */}
-      <div class="fixed top-11 left-4 z-50 flex items-center gap-5 pointer-events-none">
-        <div class="w-200 h-14" aria-hidden="true"></div>
-        <ThemeToggle />
-      </div>
       <Router>
-        {/* public access */}
-        <Route path="/login" component={Login}></Route>
-        <Route
-          path="/"
-          component={() => <Navigate href={ROUTES.login} />}
-        ></Route>
-        {/* private access*/}
-        <Route path="/secure" component={AuthGuard}>
+        <Route component={DarkModeToggleIcon}>
+          {/* public access */}
+
+          <Route path="/login" component={Login}></Route>
           <Route
             path="/"
-            component={() => <Navigate href={ROUTES.secure.rolePicker} />}
+            component={() => <Navigate href={ROUTES.login} />}
           ></Route>
+        </Route>
 
-          <Route
-            path="player-or-game-master"
-            component={PlayerOrGameMaster}
-          ></Route>
-          {/* access to all pages in folder player */}
-          <Route path="player">
+        {/* private access*/}
+        <Route path="/secure" component={AuthGuard}>
+          {/* DarkModeToggleIcon wraps up Rolepicker and Overview-Characters, Split Route path="player" necessary */}
+          <Route component={DarkModeToggleIcon}>
             <Route
               path="/"
-              component={() => (
-                <Navigate href={ROUTES.secure.player.overviewCharacters} />
-              )}
+              component={() => <Navigate href={ROUTES.secure.rolePicker} />}
             ></Route>
             <Route
-              path="overview-characters"
-              component={OverviewCharacters}
+              path="player-or-game-master"
+              component={PlayerOrGameMaster}
             ></Route>
-            {/* placeholder for next player page */}
-            <></>
+            {/* access to all pages in folder player */}
+            <Route path="player">
+              <Route
+                path="/"
+                component={() => (
+                  <Navigate href={ROUTES.secure.player.overviewCharacters} />
+                )}
+              ></Route>
+              <Route
+                path="overview-characters"
+                component={OverviewCharacters}
+              ></Route>
+            </Route>
+          </Route>
+
+          {/* placeholder for next player page */}
+          <></>
+          {/* uses layoutPlayer so we see only 1 ToggleIcon. split route path="player"  */}
+          <Route path="player">
             <Route path="characters" component={LayoutPlayer}>
               <Route
                 path="/"
@@ -74,6 +79,7 @@ render(
               <Route path=":characterSlug" component={CharacterDetail}></Route>
             </Route>
           </Route>
+
           {/*  access to all pages in folder game-master*/}
           <Route path="game-master">
             <Route

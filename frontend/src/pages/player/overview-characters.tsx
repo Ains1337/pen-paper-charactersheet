@@ -16,7 +16,7 @@ export function OverviewCharacters() {
         <h2>New Character</h2>
         <label>Name:</label>
         <input
-          class="border-2 border-solid border-blue-500 placeholder-black dark:placeholder-white"
+          class="border-2 border-solid border-blue-500 placeholder-gray-500 dark:placeholder-gray-400"
           placeholder="Happy"
           type="text"
           value={characterName()}
@@ -28,7 +28,11 @@ export function OverviewCharacters() {
       </form>
       <div>
         <h1 class="text-4xl">Character-List</h1>
-        <a href="">put existing Characters as A tag with link to detail character page here</a>
+        <div class="p-2 flex flex-col gap-1">
+          <a href="">Ramon</a>
+          <a href="">Happy</a>
+          <a href="">Kevin</a>
+        </div>
       </div>
       <form
         class="bg-surface-color flex h-60 w-60 flex-col p-2  items-center border-2 border-solid gap-5"
@@ -37,13 +41,13 @@ export function OverviewCharacters() {
         <h2>Delete Character permanently</h2>
         <label>Name:</label>
         <input
-          class="border-2 border-solid border-blue-500 placeholder-black dark:placeholder-white"
+          class="border-2 border-solid border-blue-500 placeholder-gray-500 dark:placeholder-gray-400"
           placeholder="Happy"
           type="text"
           value={characterName()}
           onInput={(e) => setCharacterName(e.target.value)}
         />
-        <button class="btn btn-secondary w-20" type="submit">
+        <button class="btn bg-red-400 dark:bg-red-700 w-40 " type="submit">
           Delete
         </button>
       </form>

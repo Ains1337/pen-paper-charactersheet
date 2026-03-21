@@ -29,8 +29,7 @@ export function ThemeToggle() {
     type="button"
     onClick={toggleTheme}
     class="btn btn-secondary btn-icon"
-    // aria-label is for screenreaders: it will say it out loud: dark mode is active...
-    aria-label={theme() ==="dark" ? "Dark mode active": "Light mode active"}
+    
     title={theme() ==="dark" ? "Dark mode active": "Light mode active"}
     >
         {theme() === "dark" ? "🌙" : "☀"} {/* dark = moon, light = sun */}

@@ -29,7 +29,7 @@ export function AuthGuard(props: ParentProps) {
       </Show>
       <Show when={session.isSuccess}>
         {/* show children when session query is successful */}
-        <h1>AuthGuard is active...removve h1 and icon and navv are aligned</h1>
+        <h1>AuthGuard is active...</h1>
         {props.children}
       </Show>
       <Show when={session.isError}>

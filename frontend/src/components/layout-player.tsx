@@ -1,14 +1,12 @@
 import { A, useNavigate, useParams } from "@solidjs/router";
-import { JSX } from "solid-js";
+import { ParentProps } from "solid-js";
 import { ROUTES } from "../lib/auth/routes";
 import { ThemeToggle } from "./theme-toggle";
 // import character image from database?
 // children? = optional, no strict type binding
 // Navigation with links in a horizontal layout
 
-export function LayoutPlayer(props: {
-  children?: JSX.Element | JSX.Element[] | string;
-}) {
+export function LayoutPlayer(props: ParentProps) {
   const navigate = useNavigate();
   const params = useParams();
   const slug = params.characterSlug;
@@ -41,7 +39,6 @@ export function LayoutPlayer(props: {
                <a href="#skills">Skill</a> works on the same page  */}
               <A
                 class="hover:underline hover:underline-offset-3 focus:outline-2 focus:outline-offset-4 focus:outline-black"
-                // activeClass="outline-black outline-1 outline-offset-4"
                 href={slug + "#stats"}
               >
                 Stats
@@ -50,21 +47,18 @@ export function LayoutPlayer(props: {
 
               <A
                 class="hover:underline hover:underline-offset-3 focus:outline-2 focus:outline-offset-4 focus:outline-black"
-                //activeClass="outline-black outline-1 outline-offset-4"
                 href={slug + "#skills"}
               >
                 Skills
               </A>
               <A
                 class="hover:underline hover:underline-offset-3 focus:outline-2 focus:outline-offset-4 focus:outline-black"
-                //activeClass="outline-black outline-1 outline-offset-4"
                 href={slug + "#actions"}
               >
                 Actions
               </A>
               <A
                 class="hover:underline hover:underline-offset-3 focus:outline-2 focus:outline-offset-4 focus:outline-black"
-                //activeClass="outline-black outline-1 outline-offset-4"
                 href={slug + "#background"}
               >
                 Background
@@ -72,51 +66,50 @@ export function LayoutPlayer(props: {
 
               <A
                 class="hover:underline hover:underline-offset-3 focus:outline-2 focus:outline-offset-4 focus:outline-black"
-                //activeClass="outline-black outline-1 outline-offset-4"
                 href={slug + "#inventory"}
               >
                 Inventory
               </A>
               <A
                 class="hover:underline hover:underline-offset-3 focus:outline-2 focus:outline-offset-4 focus:outline-black"
-                //activeClass="outline-black outline-1 outline-offset-4"
                 href={slug + "#gear"}
               >
                 Gear
               </A>
               <A
                 class="hover:underline hover:underline-offset-3 focus:outline-2 focus:outline-offset-4 focus:outline-black"
-                //activeClass="outline-black outline-1 outline-offset-4"
                 href={slug + "#history"}
               >
                 History
               </A>
             </nav>
-            <div class="h-10 w-10"></div>
-            <div class="">
-              <A
-                class=" bg-surface-color mr-4 block rounded-md p-4 font-bold hover:underline hover:underline-offset-3 focus:outline-2 focus:outline-offset-4 focus:outline-black"
-                href="#"
-                rel="noopener noreferrer"
-                onClick={() => {
-                  fetch("/api/auth/logout", {
-                    method: "POST",
+
+            <ThemeToggle></ThemeToggle>
+
+            <A
+              class=" bg-surface-color mr-4 block rounded-md p-4 font-bold hover:underline hover:underline-offset-3 focus:outline-2 focus:outline-offset-4 focus:outline-black"
+              href="#"
+              rel="noopener noreferrer"
+              onClick={() => {
+                fetch("/api/auth/logout", {
+                  method: "POST",
+                })
+                  .then(() => {
+                    navigate(ROUTES.login);
                   })
-                    .then(() => {
-                      navigate(ROUTES.login);
-                    })
-                    .catch((error) => {
-                      console.error("Logout Error", error);
-                    });
-                }}
-              >
-                Logout
-              </A>
-            </div>
+                  .catch((error) => {
+                    console.error("Logout Error", error);
+                  });
+              }}
+            >
+              Logout
+            </A>
           </div>
 
           {/* Page content */}
-          <div class="min-w-0 flex-1 overflow-x-auto mt-15">{props.children}</div>
+          <div class="min-w-0 flex-1 overflow-x-auto mt-15">
+            {props.children}
+          </div>
         </div>
       </div>
     </>
