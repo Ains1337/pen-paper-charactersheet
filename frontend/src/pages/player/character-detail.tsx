@@ -99,10 +99,9 @@ export function CharacterDetail() {
               onInput={(e) => setSkillWeapon(e.target.value)}
             />
             <label>Description</label>
-            <input
-              class=" border-2 border-solid border-blue-500 placeholder-gray-500 dark:placeholder-gray-400"
+            <textarea
+              class="min-h-24 border-2 border-solid border-blue-500 placeholder-gray-500 dark:placeholder-gray-400"
               placeholder="FB flys in a Circle and hits Target from behind with Critical Damage"
-              type="text"
               value={skillDescription()}
               onInput={(e) => setSkillDescription(e.target.value)}
             />
@@ -142,10 +141,9 @@ export function CharacterDetail() {
               onInput={(e) => setSkillWeapon(e.target.value)}
             />
             <label>Description</label>
-            <input
-              class=" border-2 border-solid border-blue-500 placeholder-gray-500 dark:placeholder-gray-400"
+            <textarea
+              class="min-h-24 border-2 border-solid border-blue-500 placeholder-gray-500 dark:placeholder-gray-400"
               placeholder="FB flys in a Circle and hits Target from behind with Critical Damage"
-              type="text"
               value={skillDescription()}
               onInput={(e) => setSkillDescription(e.target.value)}
             />
@@ -185,10 +183,9 @@ export function CharacterDetail() {
               onInput={(e) => setSkillWeapon(e.target.value)}
             />
             <label>Description</label>
-            <input
-              class=" border-2 border-solid border-blue-500 placeholder-gray-500 dark:placeholder-gray-400"
+            <textarea
+              class="min-h-24 border-2 border-solid border-blue-500 placeholder-gray-500 dark:placeholder-gray-400"
               placeholder="FB flys in a Circle and hits Target from behind with Critical Damage"
-              type="text"
               value={skillDescription()}
               onInput={(e) => setSkillDescription(e.target.value)}
             />
@@ -228,10 +225,9 @@ export function CharacterDetail() {
               onInput={(e) => setSkillWeapon(e.target.value)}
             />
             <label>Description</label>
-            <input
-              class=" border-2 border-solid border-blue-500 placeholder-gray-500 dark:placeholder-gray-400"
+            <textarea
+              class="min-h-24 border-2 border-solid border-blue-500 placeholder-gray-500 dark:placeholder-gray-400"
               placeholder="FB flys in a Circle and hits Target from behind with Critical Damage"
-              type="text"
               value={skillDescription()}
               onInput={(e) => setSkillDescription(e.target.value)}
             />
@@ -275,52 +271,9 @@ export function CharacterDetail() {
               onInput={(e) => setSkillWeapon(e.target.value)}
             />
             <label>Description</label>
-            <input
-              class=" border-2 border-solid border-blue-500 placeholder-gray-500 dark:placeholder-gray-400"
+            <textarea
+              class="min-h-24 border-2 border-solid border-blue-500 placeholder-gray-500 dark:placeholder-gray-400"
               placeholder="FB flys in a Circle and hits Target from behind with Critical Damage"
-              type="text"
-              value={skillDescription()}
-              onInput={(e) => setSkillDescription(e.target.value)}
-            />
-          </div>
-          <div class="flex flex-col gap-2">
-            <label>Name</label>
-            <input
-              class="border-2 border-solid border-blue-500 placeholder-gray-500 dark:placeholder-gray-400"
-              placeholder="Fireball"
-              type="text"
-              value={skillName()}
-              onInput={(e) => setSkillName(e.target.value)}
-            />
-            <label>Attack-Damage</label>
-            <input
-              class="border-2 border-solid border-blue-500 placeholder-gray-500 dark:placeholder-gray-400"
-              placeholder="23"
-              type="text"
-              value={skillAttackDamage()}
-              onInput={(e) => setAttackDamage(e.target.value)}
-            />
-            <label>Element</label>
-            <input
-              class="border-2 border-solid border-blue-500 placeholder-gray-500 dark:placeholder-gray-400"
-              placeholder="Fire"
-              type="text"
-              value={skillElement()}
-              onInput={(e) => setSkillElement(e.target.value)}
-            />
-            <label>Weapon</label>
-            <input
-              class="border-2 border-solid border-blue-500 placeholder-gray-500 dark:placeholder-gray-400"
-              placeholder="Staff"
-              type="text"
-              value={skillWeapon()}
-              onInput={(e) => setSkillWeapon(e.target.value)}
-            />
-            <label>Description</label>
-            <input
-              class=" border-2 border-solid border-blue-500 placeholder-gray-500 dark:placeholder-gray-400"
-              placeholder="FB flys in a Circle and hits Target from behind with Critical Damage"
-              type="text"
               value={skillDescription()}
               onInput={(e) => setSkillDescription(e.target.value)}
             />
@@ -333,14 +286,14 @@ export function CharacterDetail() {
           <button class="btn bg-red-400 dark:bg-red-700 w-40" type="submit">
             Delete Skill
           </button>
-          
+
           <input
-              class="border-2 border-solid border-blue-500 placeholder-gray-500 dark:placeholder-gray-400"
-              placeholder="Type Skill Name to delete"
-              type="text"
-              value=""
-              // onInput={(e) => setSkillWeapon(e.target.value)}
-            />
+            class="border-2 border-solid border-blue-500 placeholder-gray-500 dark:placeholder-gray-400"
+            placeholder="Type Skill Name to delete"
+            type="text"
+            value=""
+            // onInput={(e) => setSkillWeapon(e.target.value)}
+          />
         </div>
       </form>
     </div>
