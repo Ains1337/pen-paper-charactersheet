@@ -8,17 +8,17 @@ const [email, setEmail] = createSignal("");
 const [password, setPassword] = createSignal("");
 const [message, setMessage] = createSignal("");
 
-export function Login() {
+export function ResetPassword() {
   // Check if user is already logged in ...
-  const sessionQuery = useQuery(() => sessionQueryOptions);
+  // const sessionQuery = useQuery(() => sessionQueryOptions);
   // if the user is already logged in, redirect to the /secure page
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
-  createEffect(() => {
-    if (sessionQuery.isFetched && sessionQuery.isSuccess) {
-      navigate(ROUTES.secure.root);
-    }
-  });
+  // createEffect(() => {
+  //   if (sessionQuery.isFetched && sessionQuery.isSuccess) {
+  //     navigate(ROUTES.secure.root);
+  //   }
+  // });
 
   onMount(() => {
     // reset state when mounting the component
@@ -29,7 +29,7 @@ export function Login() {
     setMessage("");
   });
   // login mock
-  const handleLogin = async (e: SubmitEvent) => {
+  const handleResetPassword = async (e: SubmitEvent) => {
     e.preventDefault();
 
     // const res = await fetch("/api/auth/login", {
@@ -39,8 +39,8 @@ export function Login() {
     // });
     // const data = await res.json();
     // if (res.ok) {
-    setMessage("User logged in successfully!");
-    navigate(ROUTES.secure.root);
+    setMessage("Reset Password: success");
+    // navigate(ROUTES.secure.root);
     // } else {
     //   setMessage(data.message);
     //   alert("Login failed!");
@@ -50,19 +50,11 @@ export function Login() {
   return (
     <div class="flex h-[100dvh] flex-row items-center-safe justify-center">
       <form
-        class="bg-surface-color flex w-60 flex-col p-4 border-2 border-solid gap-3"
-        onSubmit={handleLogin}
+        class="bg-surface-color flex w-60 flex-col p-4 border-2 border-solid"
+        onSubmit={handleResetPassword}
       >
-        <div class="flex flex-row gap-15 ">
-          <h2 class="mb-3 text-xl">Login</h2>{" "}
-          <a
-            class="hover:underline hover:underline-offset-3"
-            href={ROUTES.register}
-          >
-            Register
-          </a>
-        </div>
-        <label>Email Address:</label>
+        <h2 class="mb-3 text-xl">Reset Password</h2>
+        <label>Type in your registered Email Address:</label>
         <input
           class="border-2 border-solid border-blue-500 px-1 py-1"
           type="text"
@@ -71,25 +63,10 @@ export function Login() {
           autocomplete="email"
           required
         />
-
-        <label>Password:</label>
-        <input
-          class="border-2 border-solid border-blue-500 px-1 py-1"
-          type="password"
-          value={password()}
-          onInput={(e) => setPassword(e.target.value)}
-          autocomplete="current-password"
-          required
-        />
-
-        <a
-          class="hover:underline hover:underline-offset-3"
-          href={ROUTES.resetPassword}
-        >
-          Forgot Password?
-        </a>
+        <br />
+       
         <button class="btn btn-primary w-full" type="submit">
-          Login
+          Send E-Mail 
         </button>
         <div>{message()}</div>
       </form>

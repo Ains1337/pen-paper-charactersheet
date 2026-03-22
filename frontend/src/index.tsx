@@ -13,6 +13,8 @@ import { ROUTES } from "./lib/auth/routes";
 import { LayoutPlayer } from "./components/layout-player";
 import { CharacterDetail } from "./pages/player/character-detail";
 import { DarkModeToggleIcon } from "./components/dark-mode-toggle-icon";
+import { Register } from "./pages/register";
+import { ResetPassword } from "./pages/reset-password";
 
 const root = document.getElementById("root");
 const client = new QueryClient();
@@ -30,12 +32,13 @@ render(
       <Router>
         <Route component={DarkModeToggleIcon}>
           {/* public access */}
-
           <Route path="/login" component={Login}></Route>
           <Route
             path="/"
             component={() => <Navigate href={ROUTES.login} />}
           ></Route>
+          <Route path="/register" component={Register}></Route>
+          <Route path="/reset-password" component={ResetPassword}></Route>
         </Route>
 
         {/* private access*/}
