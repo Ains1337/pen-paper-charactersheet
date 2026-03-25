@@ -1,3 +1,5 @@
+import { GroupDetail } from "../../pages/game-master/group-detail";
+
 export const ROUTES = {
   // add register,  reset-password
   register: "/register",
@@ -18,6 +20,7 @@ export const ROUTES = {
     gameMaster: {
       root: "/secure/game-master",
       overviewGroups: "/secure/game-master/overview-groups",
+      groupDetail:"/secure/game-master/groups/:groupSlug"
     },
   },
 } as const;

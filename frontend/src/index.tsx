@@ -15,6 +15,8 @@ import { CharacterDetail } from "./pages/player/character-detail";
 import { DarkModeToggleIcon } from "./components/dark-mode-toggle-icon";
 import { Register } from "./pages/register";
 import { ResetPassword } from "./pages/reset-password";
+import { LayoutGameMaster } from "./components/layout-game-master";
+import { GroupDetail } from "./pages/game-master/group-detail";
 
 const root = document.getElementById("root");
 const client = new QueryClient();
@@ -85,15 +87,26 @@ render(
 
           {/*  access to all pages in folder game-master*/}
           <Route path="game-master">
-            <Route
-              path="/"
-              component={() => (
-                <Navigate href={ROUTES.secure.gameMaster.overviewGroups} />
-              )}
-            ></Route>
-            <Route path="overview-groups" component={OverviewGroups}></Route>
-            {/* placeholder for next game-master page */}
-            <></>
+            <Route component={DarkModeToggleIcon}>
+              <Route
+                path="/"
+                component={() => (
+                  <Navigate href={ROUTES.secure.gameMaster.overviewGroups} />
+                )}
+              ></Route>
+              <Route path="overview-groups" component={OverviewGroups}></Route>
+            </Route>
+          </Route>
+          <Route path="game-master">
+            <Route path="groups" component={LayoutGameMaster}>
+              <Route
+                path="/"
+                component={() => (
+                  <Navigate href={ROUTES.secure.gameMaster.overviewGroups} />
+                )}
+              ></Route>
+              <Route path=":groupSlug" component={GroupDetail}></Route>
+            </Route>
           </Route>
         </Route>
       </Router>

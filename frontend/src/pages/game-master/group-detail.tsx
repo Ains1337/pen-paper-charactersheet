@@ -3,7 +3,7 @@ import { createSignal } from "solid-js";
 
 export function GroupDetail() {
   const params = useParams();
-  const slug = params.characterSlug;
+  const slug = params.groupSlug;
 
   const [skillName, setSkillName] = createSignal("");
   const [skillAttackDamage, setAttackDamage] = createSignal("");
