@@ -1,7 +1,6 @@
 // type definition for Properties: stats, skills, actions....
 // centralize helper functions here
 
-import { useParams } from "@solidjs/router";
 
 export type Skill = {
   id: string;
