@@ -46,34 +46,34 @@ export function LayoutGameMaster(props: ParentProps) {
 
               <A
                 class="hover:underline hover:underline-offset-3 focus:outline-2 focus:outline-offset-4 focus:outline-black"
-                href={slug + "#skills"}
+                href={slug + "#playerBackground"}
               >
-                Skills
+                Player-Background
               </A>
               <A
                 class="hover:underline hover:underline-offset-3 focus:outline-2 focus:outline-offset-4 focus:outline-black"
-                href={slug + "#actions"}
+                href={slug + "#npcs"}
               >
-                Actions
+                NPCs
               </A>
               <A
                 class="hover:underline hover:underline-offset-3 focus:outline-2 focus:outline-offset-4 focus:outline-black"
-                href={slug + "#background"}
+                href={slug + "#merchants"}
               >
-                Background
-              </A>
+                Merchants
+              </A> 
 
               <A
                 class="hover:underline hover:underline-offset-3 focus:outline-2 focus:outline-offset-4 focus:outline-black"
-                href={slug + "#inventory"}
+                href={slug + "#loot"}
               >
-                Inventory
+                Loot / Rewards
               </A>
               <A
                 class="hover:underline hover:underline-offset-3 focus:outline-2 focus:outline-offset-4 focus:outline-black"
-                href={slug + "#gear"}
+                href={slug + "#monster"}
               >
-                Gear
+                Monsters
               </A>
               <A
                 class="hover:underline hover:underline-offset-3 focus:outline-2 focus:outline-offset-4 focus:outline-black"
