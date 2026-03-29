@@ -1,28 +1,10 @@
-import { createSignal, onMount } from "solid-js";
+import { useTheme } from "./theme-provider";
 
-type Theme = "light" | "dark";
-const storage_key = "theme"; //stored in local-storage
 
-function applyTheme(theme: Theme) {
-  // add/ remove dark-mode
-  document.documentElement.classList.toggle("dark", theme === "dark");
-}
 
 export function ThemeToggle() {
-  const [theme, setTheme] = createSignal<Theme>("light"); //default theme
-  onMount(() => {
-    const saved = localStorage.getItem(storage_key); // read saved theme
-    const current = saved === "dark" ? "dark" : "light"; // tenary operator: if saved=dark is true, it becomesd dark, otherwise light
-    setTheme(current);
-    applyTheme(current);// apply theme when app starts
-  });
 
-  const toggleTheme= () =>{
-    const next =theme() === "light" ? "dark":"light"//switch theme
-    setTheme(next);
-    applyTheme(next);
-    localStorage.setItem(storage_key,next); // save theme
-  };
+  const {theme, toggleTheme}=useTheme();
 
   return(
     <button

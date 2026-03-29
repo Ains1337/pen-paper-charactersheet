@@ -40,7 +40,7 @@ After the refactor:
 ## Step 1: Create a theme provider
 
 Create file:
-- `frontend/src/lib/theme/theme-provider.tsx`
+- `frontend/src/components/theme-provider.tsx`
 
 ```tsx
 import {
@@ -131,7 +131,7 @@ Update file:
 - `frontend/src/components/theme-toggle.tsx`
 
 ```tsx
-import { useTheme } from "../lib/theme/theme-provider";
+import { useTheme } from "./theme-provider";
 
 export function ThemeToggle() {
   const { theme, toggleTheme } = useTheme();
@@ -169,7 +169,7 @@ Update file:
 Add the import:
 
 ```tsx
-import { ThemeProvider } from "./lib/theme/theme-provider";
+import { ThemeProvider } from "./components/theme-provider";
 ```
 
 Wrap your app:
@@ -245,5 +245,14 @@ So in this case:
 
 - **ThemeProvider** = central theme logic
 - **ThemeToggle** = small reusable button
+
+### Important note for the next refactor
+
+If you later follow the layout/router refactor tutorial, keep this rule in mind:
+
+- `ThemeToggle` now uses `useTheme()`
+- so it must be rendered somewhere inside `ThemeProvider`
+
+That means the app should stay wrapped once at the top level in `frontend/src/index.tsx`.
 
 That is cleaner, easier to test, and easier for a dev team to maintain.
