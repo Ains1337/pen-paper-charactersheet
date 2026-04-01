@@ -1,11 +1,11 @@
-import { A, useNavigate, useParams } from "@solidjs/router";
+import { A, useNavigate } from "@solidjs/router";
 import { JSXElement, ParentProps } from "solid-js";
 import { ROUTES } from "../lib/auth/routes";
 import { ThemeToggle } from "./theme-toggle";
 
-type LayoutShellProps = ParentProps & { nav: JSXElement };
+type LayoutSectionShellProps = ParentProps & { nav: JSXElement };
 
-export function LayoutShell(props: LayoutShellProps) {
+export function LayoutSectionShell(props: LayoutSectionShellProps) {
   const navigate = useNavigate();
   // shared logout logic for all section pages
   const handleLogout = async () => {
@@ -33,7 +33,7 @@ export function LayoutShell(props: LayoutShellProps) {
           {/* mx-auto only works with max-w and a fixed width, centers the element,
         with equal spacing on the left and right */}
           <div class="ml-4 flex flex-shrink-0 flex-row  items-center-safe gap-5 w-[100dvw] fixed">
-          {props.nav}
+            {props.nav}
 
             <ThemeToggle></ThemeToggle>
 

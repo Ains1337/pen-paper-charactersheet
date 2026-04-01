@@ -1,5 +1,3 @@
-import { GroupDetail } from "../../pages/game-master/group-detail";
-
 export const ROUTES = {
   // add register,  reset-password
   register: "/register",
@@ -10,6 +8,7 @@ export const ROUTES = {
     rolePicker: "/secure/player-or-game-master",
     player: {
       root: "/secure/player",
+      charactersRoot: "/secure/player/characters", 
       // fill in all player related pages from folder pages/player
       overviewCharacters: "/secure/player/overview-characters",
       // implement route for variable new character
@@ -19,8 +18,9 @@ export const ROUTES = {
     },
     gameMaster: {
       root: "/secure/game-master",
+      groupsRoot: "/secure/game-master/groups",  
       overviewGroups: "/secure/game-master/overview-groups",
-      groupDetail:"/secure/game-master/groups/:groupSlug"
+      groupDetail: "/secure/game-master/groups/:groupSlug",
     },
   },
 } as const;

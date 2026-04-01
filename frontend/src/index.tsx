@@ -12,12 +12,13 @@ import { OverviewGroups } from "./pages/game-master/overview-groups";
 import { ROUTES } from "./lib/auth/routes";
 import { LayoutPlayer } from "./components/layout-player";
 import { CharacterDetail } from "./pages/player/character-detail";
-import { DarkModeToggleIcon } from "./components/dark-mode-toggle-icon";
+import { LayoutPublic } from "./components/layout-public";
 import { Register } from "./pages/register";
 import { ResetPassword } from "./pages/reset-password";
 import { LayoutGameMaster } from "./components/layout-game-master";
 import { GroupDetail } from "./pages/game-master/group-detail";
 import { ThemeProvider } from "./components/theme-provider";
+import { LayoutSecureSimple } from "./components/layout-secure-simple";
 
 const root = document.getElementById("root");
 const client = new QueryClient();
@@ -31,10 +32,10 @@ if (import.meta.env.DEV && !(root instanceof HTMLElement)) {
 render(
   () => (
     <QueryClientProvider client={client}>
-      {/* pointer-events-none: makes nav clickable */}
+      {/* 1 toggle Darkmode for all pages */}
       <ThemeProvider>
         <Router>
-          <Route component={DarkModeToggleIcon}>
+          <Route component={LayoutPublic}>
             {/* public access */}
             <Route path="/login" component={Login}></Route>
             <Route
@@ -47,8 +48,8 @@ render(
 
           {/* private access*/}
           <Route path="/secure" component={AuthGuard}>
-            {/* DarkModeToggleIcon wraps up Rolepicker and Overview-Characters, Split Route path="player" necessary */}
-            <Route component={DarkModeToggleIcon}>
+            {/*simple secure pages  */}
+            <Route component={LayoutSecureSimple}>
               <Route
                 path="/"
                 component={() => <Navigate href={ROUTES.secure.rolePicker} />}
@@ -70,11 +71,22 @@ render(
                   component={OverviewCharacters}
                 ></Route>
               </Route>
+              <Route path="game-master">
+                <Route
+                  path="/"
+                  component={() => (
+                    <Navigate href={ROUTES.secure.gameMaster.overviewGroups} />
+                  )}
+                ></Route>
+                <Route
+                  path="overview-groups"
+                  component={OverviewGroups}
+                ></Route>
+              </Route>
             </Route>
 
-            {/* placeholder for next player page */}
-            <></>
-            {/* uses layoutPlayer so we see only 1 ToggleIcon. split route path="player"  */}
+            {/* player detail page */}
+
             <Route path="player">
               <Route path="characters" component={LayoutPlayer}>
                 <Route
@@ -91,20 +103,7 @@ render(
             </Route>
 
             {/*  access to all pages in folder game-master*/}
-            <Route path="game-master">
-              <Route component={DarkModeToggleIcon}>
-                <Route
-                  path="/"
-                  component={() => (
-                    <Navigate href={ROUTES.secure.gameMaster.overviewGroups} />
-                  )}
-                ></Route>
-                <Route
-                  path="overview-groups"
-                  component={OverviewGroups}
-                ></Route>
-              </Route>
-            </Route>
+
             <Route path="game-master">
               <Route path="groups" component={LayoutGameMaster}>
                 <Route

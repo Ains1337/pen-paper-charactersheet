@@ -1,80 +1,146 @@
-# LocalStorage CRUD Tutorial
+# Character + Skill LocalStorage Tutorial
 
 ## Goal
 
-Add beginner-friendly local persistence for characters and skills so that:
+Build one beginner-friendly feature flow in SolidJS so that a player can:
 
-- you can create, read, update, and delete characters
-- you can create, read, update, and delete skills
-- the page code stays easy to migrate later to Go + SQLite
-- `localStorage` is only a temporary storage adapter, not your final backend
+- create characters on `/secure/player/overview-characters`
+- open a character on `/secure/player/characters/:characterSlug`
+- rename a character later
+- add, edit, and remove skills on the detail page
+- save everything in `localStorage`
+- reload the page and still see the saved data
 
-This guide is written for a fresh graduate junior developer.
-Build it in small steps and verify each step before moving on.
+This tutorial is the **single source of truth** for the next implementation step.
+It replaces older split tutorials so a junior developer can follow one path from start to finish.
 
-## What You Are Building
+---
 
-You want 2 pages to work with real saved data:
+## What Already Exists In The App
 
-- `frontend/src/pages/player/overview-characters.tsx`
-- `frontend/src/pages/player/character-detail.tsx`
+Before writing new code, understand the current state of the project.
 
-The behavior should be:
+### Router status
 
-1. create a new character on the overview page
-2. save that character in `localStorage`
-3. list saved characters on the overview page
-4. delete a character from the overview page
-5. open one character detail page by slug
-6. load that character's saved skills
-7. add a new skill row
-8. update skill fields
-9. remove a skill row
-10. save the final skill list back to storage
-11. update the character name later from the detail page
+The app already has the player routes wired in `frontend/src/index.tsx`:
 
-## The Most Important Design Decision
+- `/secure/player/overview-characters`
+- `/secure/player/characters/:characterSlug`
 
-Do not let page components call `localStorage` directly.
+Important detail:
 
-Bad design:
+- the detail route is wrapped by `LayoutPlayer`
+- `LayoutPlayer` uses `LayoutSectionShell`
+- `LayoutSectionShell` already owns the top bar, theme toggle, and logout button
 
-```text
-page -> localStorage
-```
+That means:
 
-Better design:
+- `CharacterDetail` should only render page content
+- `CharacterDetail` should **not** wrap itself in `LayoutPlayer`
+- the router already decides which layout is used
+
+### Current page status
+
+Right now the pages are still draft versions:
+
+- `frontend/src/pages/player/overview-characters.tsx` has placeholder create and delete forms
+- `frontend/src/pages/player/character-detail.tsx` has repeated skill inputs that all share the same signals
+- `frontend/src/lib/auth/characters.ts` already contains `Character` and `Skill` types, but storage and helpers are still incomplete
+
+So the next job is not to redesign routing.
+The next job is to add **real dynamic character + skill CRUD with localStorage**.
+
+---
+
+## Final Mental Model
+
+Each layer should have one clear job.
+
+### Page components
+
+Examples:
+
+- `overview-characters.tsx`
+- `character-detail.tsx`
+
+Job:
+
+- handle UI
+- respond to button clicks
+- read route params
+- call repository methods
+
+### Reusable components
+
+Example:
+
+- `components/player/skill-form-row.tsx`
+
+Job:
+
+- render one skill row
+- send changes upward with callback props
+- stay dumb and reusable
+
+### Helper functions
+
+Example file:
+
+- `lib/auth/characters.ts`
+
+Job:
+
+- build slugs
+- create blank skill objects
+- add/update/remove skills in arrays
+- build detail URLs
+
+### Repository
+
+Also in the first version inside `lib/auth/characters.ts`
+
+Job:
+
+- read from `localStorage`
+- write to `localStorage`
+- expose a clean app-facing API
+
+Think about it like this:
 
 ```text
 page -> repository -> localStorage
 ```
 
-Later, when you switch to Go + SQLite, this becomes:
+Later, when the backend exists, this becomes:
 
 ```text
 page -> repository -> Go API -> SQLite
 ```
 
-This is the main reason the code will be easy to change later.
+That is why pages should not call `localStorage` directly.
 
-## Final Mental Model
+---
 
-Each layer should have one job:
+## Target User Flow
 
-- page = handles UI and user actions
-- helper = pure data logic
-- repository = storage API for the app
-- localStorage adapter = current storage implementation
+This is the full feature flow you are building.
 
-Think about it like this:
+```text
+Overview Characters
+  -> create a new character
+  -> list saved characters
+  -> click one character
+  -> Character Detail page opens by slug
+  -> add / edit / remove skills
+  -> save skills
+  -> reload and still see saved data
+```
 
-- pages should not care where data comes from
-- pages only call repository methods
-- the repository can be switched later
+---
 
 ## Target File Structure
 
-Keep the first version small:
+Keep the first version small and easy to understand.
 
 ```text
 frontend/src/lib/auth/characters.ts
@@ -83,23 +149,55 @@ frontend/src/pages/player/character-detail.tsx
 frontend/src/components/player/skill-form-row.tsx
 ```
 
-Later, when the file grows, you can split it into:
+Later, if the file grows too much, you can split `characters.ts` into:
 
 ```text
 frontend/src/lib/characters/types.ts
 frontend/src/lib/characters/helpers.ts
 frontend/src/lib/characters/repository.ts
 frontend/src/lib/characters/local-storage-repository.ts
-frontend/src/lib/characters/api-repository.ts
 ```
 
 For now, one file is enough.
 
-## Step 1: Keep The Domain Types Stable
+---
 
-Start with types that work for both `localStorage` now and JSON from Go later.
+## Use The Current Route Naming
 
-Example:
+Use the route shape that already exists in the project.
+
+### Correct player detail route
+
+```text
+/secure/player/characters/:characterSlug
+```
+
+### Correct param access
+
+```ts
+const params = useParams();
+const slug = params.characterSlug;
+```
+
+Do **not** switch this tutorial back to older hyphen-style names like `:character-slug`.
+The current repo already uses `characterSlug`.
+
+### Current route constants
+
+In `frontend/src/lib/auth/routes.ts` you already have:
+
+- `ROUTES.secure.player.root`
+- `ROUTES.secure.player.charactersRoot`
+- `ROUTES.secure.player.overviewCharacters`
+- `ROUTES.secure.player.characterDetail`
+
+That means future helper functions should follow the same naming style.
+
+---
+
+## Step 1: Keep Stable Domain Types
+
+In `frontend/src/lib/auth/characters.ts`, keep and extend these types.
 
 ```ts
 export type Skill = {
@@ -119,23 +217,29 @@ export type Character = {
 };
 ```
 
-Why this shape is good:
+Why this structure is good:
 
 - one character owns many skills
-- the structure is easy to save as JSON
-- the same structure can come back later from a Go API
-- SQLite can store this through `characters` and `skills` tables later
+- the shape is easy to save as JSON
+- the same shape can later come from a Go API
+- the UI can stay stable even if storage changes later
+
+---
 
 ## Step 2: Add Pure Helper Functions First
 
-Before writing storage code, add pure helpers.
-Pure helpers do not know about `localStorage`, `fetch`, or JSX.
+Before storage logic, add small helpers that only transform data.
+These helpers should not know anything about JSX or `localStorage`.
 
-Start with these:
+Recommended helpers:
 
 ```ts
 export function buildCharacterSlug(name: string): string {
   return name.trim().toLowerCase().replaceAll(" ", "-");
+}
+
+export function characterDetailHref(slug: string): string {
+  return `/secure/player/characters/${slug}`;
 }
 
 export function createEmptySkill(): Skill {
@@ -171,27 +275,29 @@ export function removeSkill(skills: Skill[], skillId: string): Skill[] {
 
 What each helper does:
 
-- `buildCharacterSlug()` creates the URL-friendly slug
+- `buildCharacterSlug()` creates a URL-safe slug
+- `characterDetailHref()` builds the detail page URL from a real slug
 - `createEmptySkill()` creates one blank skill row
-- `addSkill()` adds one more skill object to the array
-- `updateSkillField()` updates one field of one skill
-- `removeSkill()` deletes one skill from the array
+- `addSkill()` appends one new skill to the array
+- `updateSkillField()` changes one field in one skill
+- `removeSkill()` removes one skill by id
 
 Junior dev rule:
 
 - helpers receive data
 - helpers return new data
-- helpers do not touch the UI
+- helpers do not touch UI
 
-## Step 3: Use An Async Repository Contract From Day One
+---
 
-This is a very important migration trick.
+## Step 3: Add A Repository Contract
 
-Even though `localStorage` is synchronous, define repository methods as `async`.
+Even though `localStorage` is synchronous, use an async repository API from day one.
+
 Why?
 
-Because later your Go backend will use `fetch()`, which is async.
-If your pages already use `await`, you will change less code later.
+Because later the real backend will use `fetch()`, which is async.
+If pages already use `await`, future migration will be much easier.
 
 Example contract:
 
@@ -212,17 +318,11 @@ export type CharacterRepository = {
 };
 ```
 
-Why this contract is good:
+---
 
-- pages can already use `await`
-- `localStorage` can implement it now
-- `fetch("/api/...")` can implement it later
+## Step 4: Add The localStorage Storage Key
 
-## Step 4: Add The localStorage Key
-
-Use one key for all characters.
-
-Example:
+Use one key for all player characters.
 
 ```ts
 const CHARACTERS_STORAGE_KEY = "ppcs.characters.v1";
@@ -231,19 +331,21 @@ const CHARACTERS_STORAGE_KEY = "ppcs.characters.v1";
 Why one key is a good beginner choice:
 
 - easy to inspect in browser DevTools
-- easy to clear and reset
-- easy to read all characters at once
+- easy to reset
 - easy to migrate later
+- less confusing than many small keys
 
-Avoid storing each skill in separate keys.
-That would make migration harder and the code more confusing.
+Do not store every skill field in a separate storage key.
+That would make the code harder to understand and harder to migrate.
 
-## Step 5: Add Safe localStorage Read And Write Helpers
+---
+
+## Step 5: Add Safe Read And Write Functions
 
 Remember:
 
-- `localStorage` stores only strings
-- objects and arrays need `JSON.stringify()`
+- `localStorage` stores strings only
+- arrays and objects need `JSON.stringify()`
 - reading needs `JSON.parse()`
 
 Example:
@@ -271,106 +373,20 @@ function writeCharactersToStorage(characters: Character[]) {
 }
 ```
 
-Why the `try/catch` matters:
+Why `try/catch` matters:
 
-- broken JSON should not crash the page
-- fallback to `[]` keeps the app usable
+- broken JSON should not crash the app
+- returning `[]` is safer for a beginner project than a full page error
+
+---
 
 ## Step 6: Implement The localStorage Repository
 
-Now connect the contract to `localStorage`.
+Keep the first repository in the same file: `frontend/src/lib/auth/characters.ts`.
 
-Example `frontend/src/lib/auth/characters.ts`:
+Example shape:
 
 ```ts
-export type Skill = {
-  id: string;
-  name: string;
-  attackDamage: string;
-  element: string;
-  weapon: string;
-  description: string;
-};
-
-export type Character = {
-  id: string;
-  slug: string;
-  name: string;
-  skills: Skill[];
-};
-
-const CHARACTERS_STORAGE_KEY = "ppcs.characters.v1";
-
-export function buildCharacterSlug(name: string): string {
-  return name.trim().toLowerCase().replaceAll(" ", "-");
-}
-
-export function createEmptySkill(): Skill {
-  return {
-    id: crypto.randomUUID(),
-    name: "",
-    attackDamage: "",
-    element: "",
-    weapon: "",
-    description: "",
-  };
-}
-
-export function addSkill(skills: Skill[]): Skill[] {
-  return [...skills, createEmptySkill()];
-}
-
-export function updateSkillField(
-  skills: Skill[],
-  skillId: string,
-  field: keyof Omit<Skill, "id">,
-  value: string,
-): Skill[] {
-  return skills.map((skill) =>
-    skill.id === skillId ? { ...skill, [field]: value } : skill,
-  );
-}
-
-export function removeSkill(skills: Skill[], skillId: string): Skill[] {
-  return skills.filter((skill) => skill.id !== skillId);
-}
-
-function readCharactersFromStorage(): Character[] {
-  const raw = localStorage.getItem(CHARACTERS_STORAGE_KEY);
-
-  if (!raw) {
-    return [];
-  }
-
-  try {
-    return JSON.parse(raw) as Character[];
-  } catch {
-    return [];
-  }
-}
-
-function writeCharactersToStorage(characters: Character[]) {
-  localStorage.setItem(
-    CHARACTERS_STORAGE_KEY,
-    JSON.stringify(characters),
-  );
-}
-
-export type CharacterRepository = {
-  listCharacters: () => Promise<Character[]>;
-  createCharacter: (name: string) => Promise<Character>;
-  getCharacterBySlug: (slug: string) => Promise<Character | undefined>;
-  updateCharacterName: (
-    slug: string,
-    name: string,
-  ) => Promise<Character | undefined>;
-  deleteCharacter: (slug: string) => Promise<boolean>;
-  saveCharacterSkills: (
-    slug: string,
-    skills: Skill[],
-  ) => Promise<Character | undefined>;
-};
-
 export const localStorageCharacterRepository: CharacterRepository = {
   async listCharacters() {
     return readCharactersFromStorage();
@@ -378,7 +394,6 @@ export const localStorageCharacterRepository: CharacterRepository = {
 
   async createCharacter(name: string) {
     const trimmedName = name.trim();
-
     const newCharacter: Character = {
       id: crypto.randomUUID(),
       slug: buildCharacterSlug(trimmedName),
@@ -401,7 +416,6 @@ export const localStorageCharacterRepository: CharacterRepository = {
   async updateCharacterName(slug: string, name: string) {
     const trimmedName = name.trim();
     const nextSlug = buildCharacterSlug(trimmedName);
-
     const characters = readCharactersFromStorage();
 
     const updatedCharacters = characters.map((character) =>
@@ -444,49 +458,38 @@ export const localStorageCharacterRepository: CharacterRepository = {
 };
 
 export const characterRepository = localStorageCharacterRepository;
-
-export function characterDetailHref(slug: string) {
-  return `/secure/player/characters/${slug}`;
-}
 ```
 
-Why this version is future-friendly:
+Why this design is future-friendly:
 
-- page code only uses `characterRepository`
-- repository methods are already `async`
-- later you can replace the implementation with API calls
+- pages use `characterRepository`, not raw storage
+- later you can replace the repository implementation
+- the page code can stay mostly the same
 
-## Step 7: What CRUD Means In This Tutorial
+---
 
-This tutorial covers:
+## Step 7: Build The Overview Page With Real Data
 
-### Character CRUD
+File:
 
-- Create = make a new character on the overview page
-- Read = list all characters and open one by slug
-- Update = rename a character on the detail page
-- Delete = remove a character on the overview page
+- `frontend/src/pages/player/overview-characters.tsx`
 
-### Skill CRUD
+### Current problem
 
-- Create = click `Add New Skill`
-- Read = load skills when the character detail page opens
-- Update = change input field values
-- Delete = remove one skill row
-- Save = persist the full skill array back to the character
+Right now this file still shows placeholder links like `Ramon`, `Happy`, and `Kevin`.
+That means the page is not yet using real data.
 
-Important note:
+### Target job of the page
 
-- skill edits happen in local page state first
-- clicking `Save Skills` writes the whole updated skill array into storage
+The overview page should:
 
-This is simpler than saving every field immediately.
+- load saved characters from the repository
+- create a new character
+- show a list of saved characters
+- delete a character
+- link to each detail page
 
-## Step 8: Wire `OverviewCharacters` To The Repository
-
-Now make the overview page use the repository instead of placeholder code.
-
-Example:
+### Example page shape
 
 ```tsx
 import { A } from "@solidjs/router";
@@ -537,10 +540,10 @@ export function OverviewCharacters() {
       >
         <h2>New Character</h2>
 
-        <label>Name:</label>
+        <label>Name</label>
         <input
           class="border-2 border-solid border-blue-500 px-2 py-1"
-          placeholder="Happy"
+          placeholder="Happy Mage"
           type="text"
           value={characterName()}
           onInput={(e) => setCharacterName(e.currentTarget.value)}
@@ -558,15 +561,12 @@ export function OverviewCharacters() {
           <For each={characters()}>
             {(character) => (
               <div class="bg-surface-color flex items-center justify-between border-2 border-solid p-3">
-                <A
-                  class="hover:underline"
-                  href={characterDetailHref(character.slug)}
-                >
+                <A class="hover:underline" href={characterDetailHref(character.slug)}>
                   {character.name}
                 </A>
 
                 <button
-                  class="btn btn-secondary"
+                  class="btn bg-red-400 dark:bg-red-700"
                   type="button"
                   onClick={() => void handleDeleteCharacter(character.slug)}
                 >
@@ -582,58 +582,49 @@ export function OverviewCharacters() {
 }
 ```
 
-What this page now does:
+### Why this page design is good
 
-- reads characters from storage
-- creates new characters
-- lists saved characters
-- deletes characters
-- links to the detail page using the character slug
+- it keeps the UI simple
+- it lets the repository own storage details
+- it is easy to verify manually
+- it stays mobile first and readable
 
-## Step 9: Load One Character In `CharacterDetail`
+---
 
-The detail page should load one character using the route slug.
+## Step 8: Replace Repeated Skill JSX With A Reusable Component
 
-Your current route uses:
+File to create:
 
-```ts
-const slug = params.characterSlug;
+- `frontend/src/components/player/skill-form-row.tsx`
+
+### Current problem
+
+Right now `character-detail.tsx` repeats the same large input block many times.
+All those repeated blocks share the same signals:
+
+- `skillName`
+- `skillAttackDamage`
+- `skillElement`
+- `skillWeapon`
+- `skillDescription`
+
+That means typing in one row changes the same shared data.
+That is why the next step is to move to:
+
+```text
+skills array + reusable component + helper functions
 ```
 
-That is correct for your current router config.
+### Component job
 
-Now use that slug to load the character:
+The row component should:
 
-```tsx
-const [characterName, setCharacterName] = createSignal("");
-const [skills, setSkills] = createSignal<Skill[]>([]);
-const [currentSlug, setCurrentSlug] = createSignal("");
+- receive one `skill`
+- render the fields for that one skill
+- tell the parent when a field changes
+- optionally tell the parent when a skill should be removed
 
-const loadCharacter = async () => {
-  const storedCharacter = await characterRepository.getCharacterBySlug(
-    params.characterSlug,
-  );
-
-  if (!storedCharacter) {
-    return;
-  }
-
-  setCharacterName(storedCharacter.name);
-  setSkills(storedCharacter.skills);
-  setCurrentSlug(storedCharacter.slug);
-};
-```
-
-Why keep `currentSlug` in state?
-
-Because renaming a character may also change the slug.
-After rename, the repository may return a new slug.
-
-## Step 10: Reuse The Skill Row Component
-
-Use the same reusable component idea from `skill-component-tutorial.md`.
-
-Example component:
+### Example component
 
 ```tsx
 import type { Skill } from "../../lib/auth/characters";
@@ -656,7 +647,7 @@ export function SkillFormRow(props: SkillFormRowProps) {
         <h2 class="text-xl font-semibold">Skill {props.index + 1}</h2>
 
         <button
-          class="btn btn-secondary"
+          class="btn bg-red-400 dark:bg-red-700"
           type="button"
           onClick={() => props.onRemove(props.skill.id)}
         >
@@ -697,11 +688,7 @@ export function SkillFormRow(props: SkillFormRowProps) {
             class="border-2 border-solid border-blue-500 px-2 py-1"
             value={props.skill.element}
             onInput={(e) =>
-              props.onFieldChange(
-                props.skill.id,
-                "element",
-                e.currentTarget.value,
-              )
+              props.onFieldChange(props.skill.id, "element", e.currentTarget.value)
             }
           />
         </label>
@@ -712,11 +699,7 @@ export function SkillFormRow(props: SkillFormRowProps) {
             class="border-2 border-solid border-blue-500 px-2 py-1"
             value={props.skill.weapon}
             onInput={(e) =>
-              props.onFieldChange(
-                props.skill.id,
-                "weapon",
-                e.currentTarget.value,
-              )
+              props.onFieldChange(props.skill.id, "weapon", e.currentTarget.value)
             }
           />
         </label>
@@ -741,21 +724,40 @@ export function SkillFormRow(props: SkillFormRowProps) {
 }
 ```
 
-Now one skill row can be created, edited, and removed.
+### Learning point
 
-## Step 11: Add Full Character And Skill CRUD To `CharacterDetail`
+- parent owns the full skill array
+- child renders one skill object
+- child reports changes upward
 
-Now wire the detail page to support:
+---
 
-- read character
-- update character name
-- read skills
-- add skill row
+## Step 9: Build The Character Detail Page Around A Skills Array
+
+File:
+
+- `frontend/src/pages/player/character-detail.tsx`
+
+### Current problem
+
+The page currently uses many separate signals for skill fields.
+That does not scale and does not represent many skills correctly.
+
+### New page responsibilities
+
+The page should:
+
+- read `params.characterSlug`
+- load one character from the repository
+- show a not-found state when needed
+- let the user rename the character
+- show saved skills
+- add new skills
 - update skill fields
-- delete skill row
-- save skills
+- remove skills
+- save the final skill array
 
-Example:
+### Example page shape
 
 ```tsx
 import { useNavigate, useParams } from "@solidjs/router";
@@ -916,118 +918,59 @@ export function CharacterDetail() {
 }
 ```
 
-What this page now does:
+---
 
-- reads one character
-- lets the user rename the character
-- loads saved skills
-- lets the user add skill rows
-- lets the user update skill fields
-- lets the user remove skill rows
-- saves the final skill list into storage
+## Step 10: Anchor Link Rule
 
-## Step 12: CRUD Summary For The Final UI
+Your player layout already contains links like:
 
-After the tutorial is complete, each operation is handled like this:
+- overview link
+- `#skills`
+- future section links such as `#stats`, `#actions`, and others
 
-### Character Create
+Important rule:
 
-Overview page form:
+A jump link only works if the target section exists.
+
+### Correct example
 
 ```tsx
-await characterRepository.createCharacter(characterName());
+<A href={slug + "#skills"}>Skills</A>
+
+<h2 id="skills">Skills</h2>
 ```
 
-### Character Read
+### What is true in the current app
 
-Overview page list:
+Right now, `CharacterDetail` has `id="skills"`, so the `Skills` link has a real target.
+The other future anchors do not have matching ids yet.
 
-```tsx
-await characterRepository.listCharacters();
-```
+So for the next implementation step:
 
-Detail page single character:
+- keep `Skills` working
+- only add more anchor targets when the real sections exist
 
-```tsx
-await characterRepository.getCharacterBySlug(slug);
-```
+---
 
-### Character Update
+## Step 11: TDD Order For This Feature
 
-Detail page rename:
-
-```tsx
-await characterRepository.updateCharacterName(currentSlug(), characterName());
-```
-
-### Character Delete
-
-Overview page delete button:
-
-```tsx
-await characterRepository.deleteCharacter(character.slug);
-```
-
-### Skill Create
-
-Detail page add row:
-
-```tsx
-setSkills((currentSkills) => addSkill(currentSkills));
-```
-
-### Skill Read
-
-Load from character:
-
-```tsx
-setSkills(storedCharacter.skills);
-```
-
-### Skill Update
-
-Edit the local array:
-
-```tsx
-setSkills((currentSkills) =>
-  updateSkillField(currentSkills, skillId, field, value),
-);
-```
-
-### Skill Delete
-
-Remove from the local array:
-
-```tsx
-setSkills((currentSkills) => removeSkill(currentSkills, skillId));
-```
-
-### Skill Save
-
-Persist the current skill list:
-
-```tsx
-await characterRepository.saveCharacterSkills(currentSlug(), skills());
-```
-
-## Step 13: Use TDD For The Repository First
-
-This repository wants TDD, so write helper and repository tests before UI wiring.
+The repo prefers TDD, so build the logic in calm steps.
 
 Recommended test order:
 
-1. `listCharacters()` returns `[]` when storage is empty
-2. `createCharacter()` saves a new character
-3. `getCharacterBySlug()` returns the matching character
-4. `updateCharacterName()` changes name and slug
-5. `deleteCharacter()` removes the character
-6. `createEmptySkill()` returns blank fields
-7. `addSkill()` appends a skill
-8. `updateSkillField()` changes one field
-9. `removeSkill()` deletes one skill
-10. `saveCharacterSkills()` replaces the character's skills
+1. `buildCharacterSlug()` creates a URL-safe slug
+2. `listCharacters()` returns `[]` when storage is empty
+3. `createCharacter()` stores a new character
+4. `getCharacterBySlug()` returns the matching character
+5. `updateCharacterName()` changes name and slug
+6. `deleteCharacter()` removes the character
+7. `createEmptySkill()` returns blank fields
+8. `addSkill()` appends a skill
+9. `updateSkillField()` changes one field
+10. `removeSkill()` deletes one skill
+11. `saveCharacterSkills()` replaces the character's skills
 
-Example tests:
+### Example repository/helper tests
 
 ```ts
 import { beforeEach, expect, test } from "bun:test";
@@ -1106,15 +1049,169 @@ test("removeSkill deletes the selected skill", () => {
 });
 ```
 
-Important learning point:
+---
 
-- test data logic first
-- then connect it to the page
-- that makes debugging much calmer
+## Step 12: Common Beginner Mistakes To Avoid
 
-## Step 14: Why This Design Is Easy To Replace With Go + SQLite
+### Mistake 1: Let Pages Call `localStorage` Directly
 
-Later you will replace the localStorage repository with an API repository.
+Bad idea:
+
+```tsx
+localStorage.setItem("characters", JSON.stringify(data));
+```
+
+inside the page component.
+
+Why this is bad:
+
+- UI logic and storage logic get mixed together
+- the code becomes harder to test
+- backend migration becomes harder later
+
+Use the repository instead.
+
+### Mistake 2: Keep Shared Signals For All Skill Rows
+
+Bad idea:
+
+```tsx
+const [skillName, setSkillName] = createSignal("");
+```
+
+for many repeated skill blocks.
+
+Why this is bad:
+
+- all rows share the same data
+- typing in one row affects the same state
+- the data shape no longer matches the UI shape
+
+Use a `skills` array instead.
+
+### Mistake 3: Mutate Arrays Directly
+
+Bad idea:
+
+```tsx
+skills().push(createEmptySkill());
+```
+
+Why this is bad:
+
+- direct mutation is harder to reason about
+- immutable updates are clearer and easier to test
+
+Use:
+
+```tsx
+setSkills((currentSkills) => addSkill(currentSkills));
+```
+
+### Mistake 4: Use `submit` For The Add Button
+
+Bad version:
+
+```tsx
+<button type="submit">Add New Skill</button>
+```
+
+That submits the form.
+
+Correct version:
+
+```tsx
+<button type="button">Add New Skill</button>
+```
+
+### Mistake 5: Add Navigation Anchors Before Real Sections Exist
+
+Bad idea:
+
+- create links for `#stats`, `#actions`, `#inventory`, and others
+- but do not add matching `id` targets in the page
+
+Why this is bad:
+
+- links look real but do nothing useful
+- a beginner may think routing is broken
+
+Only add anchor links when the section exists.
+
+---
+
+## Step 13: Manual Verification Checklist
+
+After implementing the tutorial, verify this in the browser.
+
+### Overview page
+
+- open `/secure/player/overview-characters`
+- create `Happy Mage`
+- confirm the character appears in the list
+- refresh the page
+- confirm the character is still listed
+
+### Character detail page
+
+- click the character link
+- confirm the URL matches `/secure/player/characters/happy-mage`
+- confirm the page loads the saved character
+- confirm the `Skills` heading exists and has `id="skills"`
+- use the layout `Skills` link
+- confirm the browser jumps to the `Skills` section
+
+### Character rename
+
+- change the character name to `Fire Mage`
+- click `Save Character Name`
+- confirm the URL updates to `/secure/player/characters/fire-mage`
+- refresh the page
+- confirm the new name still exists
+
+### Skill CRUD
+
+- click `Add New Skill`
+- confirm one skill row appears
+- fill in the fields
+- click `Save Skills`
+- refresh the page
+- confirm the saved skill is still there
+- remove the skill row
+- click `Save Skills`
+- refresh the page
+- confirm the skill is gone
+
+### Character delete
+
+- go back to the overview page
+- delete the character
+- refresh the page
+- confirm the character is gone
+
+---
+
+## Step 14: Build Order
+
+If you want a calm implementation order, follow this sequence:
+
+1. finish helper functions in `lib/auth/characters.ts`
+2. add safe storage read/write helpers
+3. implement the repository
+4. export `characterRepository`
+5. update `OverviewCharacters` to load and create real characters
+6. add delete functionality to the overview page
+7. create `SkillFormRow`
+8. replace repeated skill signals in `CharacterDetail` with a `skills` array
+9. load one character by `params.characterSlug`
+10. add skill add/update/remove handlers
+11. save skills back to storage
+12. support rename + slug update
+13. manually test the full flow
+
+---
+
+## Step 15: Why This Design Is Easy To Replace Later
 
 Today:
 
@@ -1128,7 +1225,7 @@ Later:
 export const characterRepository = apiCharacterRepository;
 ```
 
-Example future API mapping:
+Possible future API mapping:
 
 - `listCharacters()` -> `GET /api/characters`
 - `createCharacter(name)` -> `POST /api/characters`
@@ -1139,121 +1236,48 @@ Example future API mapping:
 
 That means:
 
-- page code can stay mostly the same
+- page components can stay mostly the same
 - helper functions can stay the same
 - only the repository implementation changes
 
 This is exactly why the repository layer matters.
 
-## Step 15: Common Beginner Mistakes To Avoid
+---
 
-### Mistake 1: Let Pages Call `localStorage` Directly
+## Junior Dev Takeaways
 
-Bad idea:
+- one dynamic detail route is better than one file per character
+- route params decide which character to load
+- a page component should not own layout logic when the router already wraps it
+- repeated form blocks should become reusable components
+- repeated data should live in arrays, not many copied signals
+- pure helpers are easier to test than UI-heavy code
+- repository methods protect the UI from storage details
+- `localStorage` is useful now, but it is not the final backend
 
-```tsx
-localStorage.setItem("characters", JSON.stringify(data));
-```
+---
 
-inside the page component.
+## Final Outcome
 
-Why it is bad:
-
-- storage logic gets mixed into UI logic
-- migration to Go becomes harder
-- code becomes harder to test
-
-Use the repository instead.
-
-### Mistake 2: Save Each Field In Its Own Storage Key
-
-Bad idea:
+When this tutorial is complete, the player feature should behave like this:
 
 ```text
-skill-name-1
-skill-element-1
-skill-weapon-1
+Overview page
+  -> create character
+  -> list characters
+  -> delete character
+  -> open detail page
+
+Detail page
+  -> load character by slug
+  -> rename character
+  -> add skill rows
+  -> edit skill rows
+  -> remove skill rows
+  -> save skills
+
+Reload browser
+  -> data still exists because localStorage persists it
 ```
 
-Why it is bad:
-
-- hard to manage
-- hard to debug
-- hard to migrate to backend later
-
-Store full characters as objects instead.
-
-### Mistake 3: Make Repository Methods Synchronous
-
-Synchronous methods work now, but async methods are better for migration.
-
-Bad future migration:
-
-- rewrite all page logic from sync to async later
-
-Better:
-
-- use async repository methods now
-
-### Mistake 4: Mutate Arrays Directly
-
-Bad idea:
-
-```tsx
-skills().push(createEmptySkill());
-```
-
-Why it is bad:
-
-- state changes become harder to reason about
-- the code is less predictable
-
-Use helper functions that return new arrays instead.
-
-## Step 16: Manual Verify Checklist
-
-After the tutorial is implemented, verify this in the browser:
-
-- open `Overview Characters`
-- create `Happy Mage`
-- refresh the page
-- confirm `Happy Mage` is still listed
-- click the character link
-- confirm the detail page loads
-- change the character name
-- click `Save Character Name`
-- confirm the URL updates if the slug changed
-- click `Add New Skill`
-- confirm one new skill row appears
-- fill in the skill
-- click `Save Skills`
-- refresh the detail page
-- confirm the skill is still there
-- delete the skill row
-- click `Save Skills`
-- refresh the page
-- confirm the skill is gone
-- go back to overview
-- delete the character
-- refresh the page
-- confirm the character is gone
-
-## Step 17: Junior Dev Takeaways
-
-- use `localStorage` as a temporary adapter, not as page logic
-- keep pure helpers separate from storage code
-- use one repository API for the whole app
-- prefer async repository methods now to reduce migration work later
-- save structured domain objects, not random individual fields
-- skill CRUD can happen in local state first, then be persisted with one save action
-- backend migration is much easier when the page does not know how persistence works
-
-## Nice Next Steps
-
-Once this tutorial works, good follow-up steps are:
-
-1. add validation helpers such as `character name is required`
-2. prevent duplicate slugs
-3. show success and error messages in the UI
-4. move from localStorage repository to a real Go API repository
-5. store characters and skills in SQLite through the backend
+That is the full goal for this implementation step.
