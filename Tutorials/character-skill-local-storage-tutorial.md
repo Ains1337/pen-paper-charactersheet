@@ -5,14 +5,35 @@
 Build one beginner-friendly feature flow in SolidJS so that a player can:
 
 - create characters on `/secure/player/overview-characters`
+- generate the character slug automatically from the typed character name
 - open a character on `/secure/player/characters/:characterSlug`
 - rename a character later
+- start every new character with **3 default skill rows**
 - add, edit, and remove skills on the detail page
 - save everything in `localStorage`
 - reload the page and still see the saved data
 
 This tutorial is the **single source of truth** for the next implementation step.
 It replaces older split tutorials so a junior developer can follow one path from start to finish.
+
+## Minimum First Milestone
+
+Before building the full character sheet, finish this smaller milestone first:
+
+1. create a character with a generated slug
+2. save that character in `localStorage`
+3. open the character detail page by slug
+4. show the 3 default skill rows
+5. edit and save skills
+
+Do not build everything at once.
+Build this feature in phases:
+
+1. finish `frontend/src/lib/auth/characters.ts`
+2. update the overview page
+3. create the skill row component
+4. update the detail page
+5. test the full flow in the browser
 
 ---
 
@@ -39,6 +60,13 @@ That means:
 - `CharacterDetail` should **not** wrap itself in `LayoutPlayer`
 - the router already decides which layout is used
 
+Important scope note:
+
+- `LayoutPlayer` already contains links for future sections such as `Stats`, `Actions`, `Background`, `Inventory`, `Gear`, and `History`
+- in this tutorial, only `Skills` is implemented on purpose
+- the goal is to finish one dynamic section template first
+- later you can reuse the same pattern for the other sections
+
 ### Current page status
 
 Right now the pages are still draft versions:
@@ -48,7 +76,7 @@ Right now the pages are still draft versions:
 - `frontend/src/lib/auth/characters.ts` already contains `Character` and `Skill` types, but storage and helpers are still incomplete
 
 So the next job is not to redesign routing.
-The next job is to add **real dynamic character + skill CRUD with localStorage**.
+The next job is to add **real dynamic character and skill CRUD with localStorage**.
 
 ---
 
@@ -97,7 +125,7 @@ Job:
 
 ### Repository
 
-Also in the first version inside `lib/auth/characters.ts`
+In the first version, the repository can also live inside `lib/auth/characters.ts`
 
 Job:
 
@@ -127,10 +155,14 @@ This is the full feature flow you are building.
 
 ```text
 Overview Characters
+  -> type a character name like "boi"
   -> create a new character
+  -> repository builds slug "boi"
   -> list saved characters
   -> click one character
   -> Character Detail page opens by slug
+  -> page already shows 3 default skill rows
+  -> user edits placeholders into real skill data
   -> add / edit / remove skills
   -> save skills
   -> reload and still see saved data
@@ -159,6 +191,26 @@ frontend/src/lib/characters/local-storage-repository.ts
 ```
 
 For now, one file is enough.
+
+## Exact Checklist For `frontend/src/lib/auth/characters.ts`
+
+When you implement this file, use this checklist step by step:
+
+- keep `Skill`
+- keep `Character`
+- export `buildCharacterSlug`
+- export `characterDetailHref`
+- export `createEmptySkill`
+- export `createDefaultSkills`
+- export `addSkill`
+- export `updateSkillField`
+- export `removeSkill`
+- add `CHARACTERS_STORAGE_KEY`
+- add `readCharactersFromStorage()`
+- add `writeCharactersToStorage()`
+- add `CharacterRepository`
+- add `localStorageCharacterRepository`
+- export `characterRepository`
 
 ---
 
@@ -253,6 +305,10 @@ export function createEmptySkill(): Skill {
   };
 }
 
+export function createDefaultSkills(): Skill[] {
+  return [createEmptySkill(), createEmptySkill(), createEmptySkill()];
+}
+
 export function addSkill(skills: Skill[]): Skill[] {
   return [...skills, createEmptySkill()];
 }
@@ -275,12 +331,26 @@ export function removeSkill(skills: Skill[], skillId: string): Skill[] {
 
 What each helper does:
 
-- `buildCharacterSlug()` creates a URL-safe slug
-- `characterDetailHref()` builds the detail page URL from a real slug
+- `buildCharacterSlug()` creates a URL-safe slug from the typed character name
+- `characterDetailHref()` builds the detail page URL from a real slug value and should be **exported**
 - `createEmptySkill()` creates one blank skill row
+- `createDefaultSkills()` creates the 3 default skill rows for every new character
 - `addSkill()` appends one new skill to the array
 - `updateSkillField()` changes one field in one skill
 - `removeSkill()` removes one skill by id
+
+Important clarification:
+
+- the slug must **not** be hardcoded to a fixed value like `"boi"`
+- the helper `characterDetailHref(slug)` is okay because it only builds a URL from a real slug variable
+- the real slug should be created dynamically inside `createCharacter(name)` using `buildCharacterSlug(name)`
+- for now, this helper can stay simple; later, if route centralization grows, you can rebuild it from `ROUTES.secure.player.charactersRoot`
+
+Known first-version limitation:
+
+- duplicate names can create duplicate slugs
+- for this first version, keep it simple and accept that limitation
+- later you can add uniqueness like `boi-2`
 
 Junior dev rule:
 
@@ -394,11 +464,16 @@ export const localStorageCharacterRepository: CharacterRepository = {
 
   async createCharacter(name: string) {
     const trimmedName = name.trim();
+
+    if (!trimmedName) {
+      throw new Error("Character name is required");
+    }
+
     const newCharacter: Character = {
       id: crypto.randomUUID(),
       slug: buildCharacterSlug(trimmedName),
       name: trimmedName,
-      skills: [],
+      skills: createDefaultSkills(),
     };
 
     const characters = readCharactersFromStorage();
@@ -415,6 +490,11 @@ export const localStorageCharacterRepository: CharacterRepository = {
 
   async updateCharacterName(slug: string, name: string) {
     const trimmedName = name.trim();
+
+    if (!trimmedName) {
+      return undefined;
+    }
+
     const nextSlug = buildCharacterSlug(trimmedName);
     const characters = readCharactersFromStorage();
 
@@ -465,6 +545,7 @@ Why this design is future-friendly:
 - pages use `characterRepository`, not raw storage
 - later you can replace the repository implementation
 - the page code can stay mostly the same
+- repository-level validation protects the app even if the UI forgets to validate something
 
 ---
 
@@ -588,6 +669,7 @@ export function OverviewCharacters() {
 - it lets the repository own storage details
 - it is easy to verify manually
 - it stays mobile first and readable
+- character creation automatically prepares the slug and the 3 default skills for the next page
 
 ---
 
@@ -596,6 +678,8 @@ export function OverviewCharacters() {
 File to create:
 
 - `frontend/src/components/player/skill-form-row.tsx`
+
+If `frontend/src/components/player/` does not exist yet, create that folder first.
 
 ### Current problem
 
@@ -621,6 +705,7 @@ The row component should:
 
 - receive one `skill`
 - render the fields for that one skill
+- show helpful placeholders so the user understands the expected input format
 - tell the parent when a field changes
 - optionally tell the parent when a skill should be removed
 
@@ -660,6 +745,7 @@ export function SkillFormRow(props: SkillFormRowProps) {
           <span>Name</span>
           <input
             class="border-2 border-solid border-blue-500 px-2 py-1"
+            placeholder="Fireball"
             value={props.skill.name}
             onInput={(e) =>
               props.onFieldChange(props.skill.id, "name", e.currentTarget.value)
@@ -671,6 +757,7 @@ export function SkillFormRow(props: SkillFormRowProps) {
           <span>Attack-Damage</span>
           <input
             class="border-2 border-solid border-blue-500 px-2 py-1"
+            placeholder="25"
             value={props.skill.attackDamage}
             onInput={(e) =>
               props.onFieldChange(
@@ -686,6 +773,7 @@ export function SkillFormRow(props: SkillFormRowProps) {
           <span>Element</span>
           <input
             class="border-2 border-solid border-blue-500 px-2 py-1"
+            placeholder="Fire"
             value={props.skill.element}
             onInput={(e) =>
               props.onFieldChange(props.skill.id, "element", e.currentTarget.value)
@@ -697,6 +785,7 @@ export function SkillFormRow(props: SkillFormRowProps) {
           <span>Weapon</span>
           <input
             class="border-2 border-solid border-blue-500 px-2 py-1"
+            placeholder="Staff"
             value={props.skill.weapon}
             onInput={(e) =>
               props.onFieldChange(props.skill.id, "weapon", e.currentTarget.value)
@@ -708,6 +797,7 @@ export function SkillFormRow(props: SkillFormRowProps) {
           <span>Description</span>
           <input
             class="border-2 border-solid border-blue-500 px-2 py-1"
+            placeholder="Attack Damage 25, ranged fire spell"
             value={props.skill.description}
             onInput={(e) =>
               props.onFieldChange(
@@ -751,7 +841,8 @@ The page should:
 - load one character from the repository
 - show a not-found state when needed
 - let the user rename the character
-- show saved skills
+- show the 3 default saved skills for a newly created character
+- show helpful placeholders so the expected input format is easy to understand
 - add new skills
 - update skill fields
 - remove skills
@@ -1157,6 +1248,8 @@ After implementing the tutorial, verify this in the browser.
 - click the character link
 - confirm the URL matches `/secure/player/characters/happy-mage`
 - confirm the page loads the saved character
+- confirm the page already shows **3 default skill rows**
+- confirm the rows show helpful placeholders such as `Fireball`, `25`, `Fire`, `Staff`
 - confirm the `Skills` heading exists and has `id="skills"`
 - use the layout `Skills` link
 - confirm the browser jumps to the `Skills` section
@@ -1171,16 +1264,21 @@ After implementing the tutorial, verify this in the browser.
 
 ### Skill CRUD
 
-- click `Add New Skill`
-- confirm one skill row appears
+- confirm the first 3 default skill rows are already visible
 - fill in the fields
 - click `Save Skills`
 - refresh the page
-- confirm the saved skill is still there
-- remove the skill row
+- confirm the saved skill data is still there
+- click `Add New Skill`
+- confirm one more skill row appears below the original 3 rows
+- fill in the new row
 - click `Save Skills`
 - refresh the page
-- confirm the skill is gone
+- confirm the new saved skill is still there
+- remove one skill row
+- click `Save Skills`
+- refresh the page
+- confirm the removed skill is gone
 
 ### Character delete
 
@@ -1264,15 +1362,17 @@ When this tutorial is complete, the player feature should behave like this:
 ```text
 Overview page
   -> create character
+  -> build slug from typed character name
   -> list characters
   -> delete character
   -> open detail page
 
 Detail page
   -> load character by slug
+  -> show 3 default skill rows
   -> rename character
-  -> add skill rows
   -> edit skill rows
+  -> add more skill rows
   -> remove skill rows
   -> save skills
 
