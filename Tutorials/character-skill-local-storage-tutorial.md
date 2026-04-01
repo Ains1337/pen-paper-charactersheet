@@ -199,6 +199,7 @@ When you implement this file, use this checklist step by step:
 - keep `Skill`
 - keep `Character`
 - export `buildCharacterSlug`
+- export `buildUniqueCharacterSlug`
 - export `characterDetailHref`
 - export `createEmptySkill`
 - export `createDefaultSkills`
@@ -290,6 +291,28 @@ export function buildCharacterSlug(name: string): string {
   return name.trim().toLowerCase().replaceAll(" ", "-");
 }
 
+export function buildUniqueCharacterSlug(
+  name: string,
+  characters: Character[],
+  excludeCharacterId?: string,
+): string {
+  const baseSlug = buildCharacterSlug(name);
+  let candidate = baseSlug;
+  let counter = 2;
+
+  while (
+    characters.some(
+      (character) =>
+        character.slug === candidate && character.id !== excludeCharacterId,
+    )
+  ) {
+    candidate = `${baseSlug}-${counter}`;
+    counter++;
+  }
+
+  return candidate;
+}
+
 export function characterDetailHref(slug: string): string {
   return `/secure/player/characters/${slug}`;
 }
@@ -331,7 +354,8 @@ export function removeSkill(skills: Skill[], skillId: string): Skill[] {
 
 What each helper does:
 
-- `buildCharacterSlug()` creates a URL-safe slug from the typed character name
+- `buildCharacterSlug()` creates a URL-safe base slug from the typed character name
+- `buildUniqueCharacterSlug()` guarantees that the final slug is unique, for example `boi`, `boi-2`, `boi-3`
 - `characterDetailHref()` builds the detail page URL from a real slug value and should be **exported**
 - `createEmptySkill()` creates one blank skill row
 - `createDefaultSkills()` creates the 3 default skill rows for every new character
@@ -343,14 +367,11 @@ Important clarification:
 
 - the slug must **not** be hardcoded to a fixed value like `"boi"`
 - the helper `characterDetailHref(slug)` is okay because it only builds a URL from a real slug variable
-- the real slug should be created dynamically inside `createCharacter(name)` using `buildCharacterSlug(name)`
+- the real slug should be created dynamically inside `createCharacter(name)`
+- use `buildCharacterSlug(name)` for the base slug
+- use `buildUniqueCharacterSlug(name, characters)` for the final saved slug
+- unique slugs are required from the beginning, so duplicate names must become values like `boi-2`
 - for now, this helper can stay simple; later, if route centralization grows, you can rebuild it from `ROUTES.secure.player.charactersRoot`
-
-Known first-version limitation:
-
-- duplicate names can create duplicate slugs
-- for this first version, keep it simple and accept that limitation
-- later you can add uniqueness like `boi-2`
 
 Junior dev rule:
 
@@ -469,14 +490,16 @@ export const localStorageCharacterRepository: CharacterRepository = {
       throw new Error("Character name is required");
     }
 
+    const characters = readCharactersFromStorage();
+    const uniqueSlug = buildUniqueCharacterSlug(trimmedName, characters);
+
     const newCharacter: Character = {
       id: crypto.randomUUID(),
-      slug: buildCharacterSlug(trimmedName),
+      slug: uniqueSlug,
       name: trimmedName,
       skills: createDefaultSkills(),
     };
 
-    const characters = readCharactersFromStorage();
     writeCharactersToStorage([...characters, newCharacter]);
 
     return newCharacter;
@@ -495,11 +518,21 @@ export const localStorageCharacterRepository: CharacterRepository = {
       return undefined;
     }
 
-    const nextSlug = buildCharacterSlug(trimmedName);
     const characters = readCharactersFromStorage();
+    const currentCharacter = characters.find((character) => character.slug === slug);
+
+    if (!currentCharacter) {
+      return undefined;
+    }
+
+    const nextSlug = buildUniqueCharacterSlug(
+      trimmedName,
+      characters,
+      currentCharacter.id,
+    );
 
     const updatedCharacters = characters.map((character) =>
-      character.slug === slug
+      character.id === currentCharacter.id
         ? { ...character, name: trimmedName, slug: nextSlug }
         : character,
     );
@@ -507,7 +540,7 @@ export const localStorageCharacterRepository: CharacterRepository = {
     writeCharactersToStorage(updatedCharacters);
 
     return updatedCharacters.find(
-      (character) => character.slug === nextSlug,
+      (character) => character.id === currentCharacter.id,
     );
   },
 
@@ -1049,17 +1082,19 @@ The repo prefers TDD, so build the logic in calm steps.
 
 Recommended test order:
 
-1. `buildCharacterSlug()` creates a URL-safe slug
-2. `listCharacters()` returns `[]` when storage is empty
-3. `createCharacter()` stores a new character
-4. `getCharacterBySlug()` returns the matching character
-5. `updateCharacterName()` changes name and slug
-6. `deleteCharacter()` removes the character
-7. `createEmptySkill()` returns blank fields
-8. `addSkill()` appends a skill
-9. `updateSkillField()` changes one field
-10. `removeSkill()` deletes one skill
-11. `saveCharacterSkills()` replaces the character's skills
+1. `buildCharacterSlug()` creates a URL-safe base slug
+2. `buildUniqueCharacterSlug()` creates a unique final slug
+3. `listCharacters()` returns `[]` when storage is empty
+4. `createCharacter()` stores a new character
+5. `createCharacter()` creates a unique slug for duplicate names
+6. `getCharacterBySlug()` returns the matching character
+7. `updateCharacterName()` changes name and keeps the slug unique
+8. `deleteCharacter()` removes the character
+9. `createEmptySkill()` returns blank fields
+10. `addSkill()` appends a skill
+11. `updateSkillField()` changes one field
+12. `removeSkill()` deletes one skill
+13. `saveCharacterSkills()` replaces the character's skills
 
 ### Example repository/helper tests
 
@@ -1068,6 +1103,7 @@ import { beforeEach, expect, test } from "bun:test";
 import {
   addSkill,
   buildCharacterSlug,
+  buildUniqueCharacterSlug,
   characterRepository,
   createEmptySkill,
   removeSkill,
@@ -1078,8 +1114,17 @@ beforeEach(() => {
   localStorage.clear();
 });
 
-test("buildCharacterSlug creates a URL-safe slug", () => {
+test("buildCharacterSlug creates a URL-safe base slug", () => {
   expect(buildCharacterSlug("Happy Mage")).toBe("happy-mage");
+});
+
+test("buildUniqueCharacterSlug creates a unique slug", () => {
+  const existing = [
+    { id: "1", slug: "boi", name: "boi", skills: [] },
+    { id: "2", slug: "boi-2", name: "boi", skills: [] },
+  ];
+
+  expect(buildUniqueCharacterSlug("boi", existing)).toBe("boi-3");
 });
 
 test("createCharacter stores a new character", async () => {
@@ -1091,8 +1136,16 @@ test("createCharacter stores a new character", async () => {
   expect(characters).toHaveLength(1);
 });
 
-test("updateCharacterName changes the name and slug", async () => {
+test("createCharacter creates a unique slug for duplicate names", async () => {
+  await characterRepository.createCharacter("boi");
+  const second = await characterRepository.createCharacter("boi");
+
+  expect(second.slug).toBe("boi-2");
+});
+
+test("updateCharacterName changes the name and keeps the slug unique", async () => {
   await characterRepository.createCharacter("Happy Mage");
+  await characterRepository.createCharacter("Fire Mage");
 
   const updated = await characterRepository.updateCharacterName(
     "happy-mage",
@@ -1100,7 +1153,7 @@ test("updateCharacterName changes the name and slug", async () => {
   );
 
   expect(updated?.name).toBe("Fire Mage");
-  expect(updated?.slug).toBe("fire-mage");
+  expect(updated?.slug).toBe("fire-mage-2");
 });
 
 test("deleteCharacter removes the character", async () => {
@@ -1258,7 +1311,8 @@ After implementing the tutorial, verify this in the browser.
 
 - change the character name to `Fire Mage`
 - click `Save Character Name`
-- confirm the URL updates to `/secure/player/characters/fire-mage`
+- confirm the URL updates to the correct unique slug
+- if `fire-mage` already exists, confirm the slug becomes something like `fire-mage-2`
 - refresh the page
 - confirm the new name still exists
 
