@@ -288,7 +288,8 @@ Recommended helpers:
 
 ```ts
 export function buildCharacterSlug(name: string): string {
-  return name.trim().toLowerCase().replaceAll(" ", "-");
+  // Turn the typed name into a URL-friendly slug.
+  return name.trim().toLowerCase().replace(/\s+/g, "-");
 }
 
 export function buildUniqueCharacterSlug(
@@ -300,12 +301,15 @@ export function buildUniqueCharacterSlug(
   let candidate = baseSlug;
   let counter = 2;
 
-  while (
+  // Give the array check a readable name.
+  const slugExists = (slug: string) =>
     characters.some(
       (character) =>
-        character.slug === candidate && character.id !== excludeCharacterId,
-    )
-  ) {
+        character.slug === slug && character.id !== excludeCharacterId,
+    );
+
+  // Try baseSlug, then baseSlug-2, baseSlug-3, and so on.
+  while (slugExists(candidate)) {
     candidate = `${baseSlug}-${counter}`;
     counter++;
   }
@@ -314,11 +318,13 @@ export function buildUniqueCharacterSlug(
 }
 
 export function characterDetailHref(slug: string): string {
+  // Keep route building in one shared helper.
   return `/secure/player/characters/${slug}`;
 }
 
 export function createEmptySkill(): Skill {
   return {
+    // Give each row a stable id for edit/delete operations.
     id: crypto.randomUUID(),
     name: "",
     attackDamage: "",
@@ -329,10 +335,12 @@ export function createEmptySkill(): Skill {
 }
 
 export function createDefaultSkills(): Skill[] {
+  // Every new character starts with 3 blank skill rows.
   return [createEmptySkill(), createEmptySkill(), createEmptySkill()];
 }
 
 export function addSkill(skills: Skill[]): Skill[] {
+  // Return a new array with one extra blank skill.
   return [...skills, createEmptySkill()];
 }
 
@@ -342,12 +350,17 @@ export function updateSkillField(
   field: keyof Omit<Skill, "id">,
   value: string,
 ): Skill[] {
+  // Loop through all skills.
+  // If the id matches, copy that skill and replace only one field.
+  // All other skills stay exactly the same.
   return skills.map((skill) =>
     skill.id === skillId ? { ...skill, [field]: value } : skill,
   );
 }
 
 export function removeSkill(skills: Skill[], skillId: string): Skill[] {
+  // Keep every skill except the one with the matching id.
+  // This creates a new array and leaves the old array untouched.
   return skills.filter((skill) => skill.id !== skillId);
 }
 ```
@@ -356,12 +369,13 @@ What each helper does:
 
 - `buildCharacterSlug()` creates a URL-safe base slug from the typed character name
 - `buildUniqueCharacterSlug()` guarantees that the final slug is unique, for example `boi`, `boi-2`, `boi-3`
+- inside `buildUniqueCharacterSlug()`, the small `slugExists()` helper is there only to improve readability for a junior developer
 - `characterDetailHref()` builds the detail page URL from a real slug value and should be **exported**
 - `createEmptySkill()` creates one blank skill row
 - `createDefaultSkills()` creates the 3 default skill rows for every new character
 - `addSkill()` appends one new skill to the array
-- `updateSkillField()` changes one field in one skill
-- `removeSkill()` removes one skill by id
+- `updateSkillField()` finds the matching skill by id, copies it, and changes only one field such as `name` or `element`
+- `removeSkill()` returns a new array that keeps every skill except the one with the matching id
 
 Important clarification:
 
@@ -1177,6 +1191,7 @@ test("updateSkillField changes one field", () => {
   const original = [createEmptySkill()];
   const skillId = original[0].id;
 
+  // Change only the name field on the matching skill.
   const updated = updateSkillField(original, skillId, "name", "Fireball");
 
   expect(updated[0].name).toBe("Fireball");
@@ -1186,6 +1201,7 @@ test("removeSkill deletes the selected skill", () => {
   const first = createEmptySkill();
   const second = createEmptySkill();
 
+  // Remove the first skill by id, so only the second one should remain.
   const updated = removeSkill([first, second], first.id);
 
   expect(updated).toHaveLength(1);
